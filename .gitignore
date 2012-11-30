@@ -5,6 +5,11 @@ result.*
 run_tmp/
 *.result
 
+# Eclipse project #
+###################
+.classpath
+.project
+
 # Compiled source #
 ###################
 *.com

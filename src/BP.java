@@ -583,9 +583,9 @@ public class BP extends Configured implements Tool {
 		} else {
 			copyToLocalFile(conf, output_path, prev_local_path);
 			copyToLocalFile(conf, output_path, new_local_path);
-         System.out.println("**********************");
-         System.out.println("BP: First Run");
-         System.out.println("**********************");
+			System.out.println("**********************");
+			System.out.println("BP: First Run");
+			System.out.println("**********************");
 			return false;
 		}
 
@@ -660,8 +660,8 @@ public class BP extends Configured implements Tool {
 			cur_iter = Integer.parseInt(args[9].substring(4));
 		}
 
-		System.out.println("edge_path=" + edge_path.toString() + ", prior_path="
-				+ prior_path.toString() + ", output_path="
+		System.out.println("edge_path=" + edge_path.toString()
+				+ ", prior_path=" + prior_path.toString() + ", output_path="
 				+ output_path.toString() + ", |V|=" + number_nodes
 				+ ", nreducer=" + nreducer + ", maxiter=" + max_iter
 				+ ", nstate=" + nstate + ", edge_potential_str="
@@ -741,8 +741,8 @@ public class BP extends Configured implements Tool {
 	// Configure pass2
 	protected JobConf configUpdateMessage() throws Exception {
 		final JobConf conf = new JobConf(getConf(), BP.class);
-		conf.set("nstate", "" + nstate);
-		conf.set("compat_matrix_str", "" + edge_potential_str);
+		// conf.set("nstate", "" + nstate);
+		// conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Update_message");
 
 		conf.setMapperClass(MapUpdateMessage.class);
@@ -763,8 +763,8 @@ public class BP extends Configured implements Tool {
 
 	protected JobConf configComputeBelief() throws Exception {
 		final JobConf conf = new JobConf(getConf(), BP.class);
-		conf.set("nstate", "" + nstate);
-		conf.set("compat_matrix_str", "" + edge_potential_str);
+		// conf.set("nstate", "" + nstate);
+		// conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Compute_Belief");
 
 		conf.setMapperClass(MapComputeBelief.class);
