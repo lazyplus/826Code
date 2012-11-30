@@ -191,14 +191,14 @@ public class BP extends Configured implements Tool {
 				ep[row][col] = 1 - cumul_sum;
 			}
 
-//			System.out.println("[RedUpdateMessage] nstate = " + nstate
-//					+ ". Compatibility Matrix=");
-//			for (row = 0; row < nstate; row++) {
-//				for (col = 0; col < nstate; col++) {
-//					System.out.print("" + ep[row][col] + "\t");
-//				}
-//				System.out.println("");
-//			}
+			// System.out.println("[RedUpdateMessage] nstate = " + nstate
+			// + ". Compatibility Matrix=");
+			// for (row = 0; row < nstate; row++) {
+			// for (col = 0; col < nstate; col++) {
+			// System.out.print("" + ep[row][col] + "\t");
+			// }
+			// System.out.println("");
+			// }
 		}
 
 		@Override
@@ -402,14 +402,14 @@ public class BP extends Configured implements Tool {
 				ep[row][col] = 1 - cumul_sum;
 			}
 
-//			System.out.println("[RedComputeBelief] nstate = " + nstate
-//					+ ". Compatibility Matrix=");
-//			for (row = 0; row < nstate; row++) {
-//				for (col = 0; col < nstate; col++) {
-//					System.out.print("" + ep[row][col] + "\t");
-//				}
-//				System.out.println("");
-//			}
+			// System.out.println("[RedComputeBelief] nstate = " + nstate
+			// + ". Compatibility Matrix=");
+			// for (row = 0; row < nstate; row++) {
+			// for (col = 0; col < nstate; col++) {
+			// System.out.print("" + ep[row][col] + "\t");
+			// }
+			// System.out.println("");
+			// }
 		}
 
 		@Override
@@ -650,6 +650,7 @@ public class BP extends Configured implements Tool {
 
 		number_nodes = Long.parseLong(args[3]);
 		nreducer = Integer.parseInt(args[4]);
+		nreducer = 1;
 		max_iter = Integer.parseInt(args[5]);
 
 		nstate = Integer.parseInt(args[7]);
@@ -738,8 +739,8 @@ public class BP extends Configured implements Tool {
 	// Configure pass2
 	protected JobConf configUpdateMessage() throws Exception {
 		final JobConf conf = new JobConf(getConf(), BP.class);
-		 conf.set("nstate", "" + nstate);
-		 conf.set("compat_matrix_str", "" + edge_potential_str);
+		conf.set("nstate", "" + nstate);
+		conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Update_message");
 
 		conf.setMapperClass(MapUpdateMessage.class);
@@ -760,8 +761,8 @@ public class BP extends Configured implements Tool {
 
 	protected JobConf configComputeBelief() throws Exception {
 		final JobConf conf = new JobConf(getConf(), BP.class);
-		 conf.set("nstate", "" + nstate);
-		 conf.set("compat_matrix_str", "" + edge_potential_str);
+		conf.set("nstate", "" + nstate);
+		conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Compute_Belief");
 
 		conf.setMapperClass(MapComputeBelief.class);

@@ -1,6 +1,7 @@
 # BP data files #
 #################
 bp.*
+lbp.*
 result.*
 run_tmp/
 *.result
