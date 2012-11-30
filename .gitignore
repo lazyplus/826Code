@@ -1,3 +1,10 @@
+# BP data files #
+#################
+bp.*
+result.*
+run_tmp/
+*.result
+
 # Compiled source #
 ###################
 *.com
