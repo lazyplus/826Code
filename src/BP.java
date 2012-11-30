@@ -315,79 +315,6 @@ public class BP extends Configured implements Tool
 		}
     }
 
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////////
-    // STAGE 2.2: Check Error
-	//  - Input: current message (bp_message_cur) = {(src, dst, "s" + state1_prob, ..., "s" + state(K-1)_prob)},
-	//			 updated message (bp_message_next) = {(src, dst, "s" + state1_prob, ..., "s" + state(K-1)_prob)}
-	//  - Output: errors = {(0, (sum of absolute differences of the states))}
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public static class MapCheckError extends MapReduceBase implements Mapper<LongWritable, Text, Text, Text>
-    {
-		@Override
-		public void map (final LongWritable key, final Text value, final OutputCollector<Text, Text> output, final Reporter reporter) throws IOException
-		{
-			String line_text = value.toString();
-			String[] tokens = line_text.split("\t");
-
-			String out_val = "";
-			for(int i = 2; i < tokens.length; i++) {
-				if( i != 2 )
-					out_val += "\t";
-				out_val += tokens[i];
-			}
-
-			output.collect(new Text(tokens[0] + "\t" + tokens[1]), new Text(out_val) );
-		}
-	}
-
-    public static class RedCheckError extends MapReduceBase	implements Reducer<Text, Text, LongWritable, Text>
-    {
-		int nstate = 2;
-
-		@Override
-		public void configure(JobConf job) {
-			nstate = Integer.parseInt(job.get("nstate"));
-
-			System.out.println("[RedCheckError] nstate = " + nstate);
-		}
-
-		@Override
-		public void reduce (final Text key, final Iterator<Text> values, final OutputCollector<LongWritable, Text> output, final Reporter reporter) throws IOException
-        {
-			double [][] state_probs = new double[2][nstate];
-
-			int cur_index=0;
-			int i;
-
-			while (values.hasNext()) {
-				String cur_value_str = values.next().toString();
-				String[] tokens= cur_value_str.split("\t");
-
-				double sum = 0;
-				for(i = 0; i < nstate -1; i++) {
-					state_probs[cur_index][i] = Double.parseDouble(tokens[i].substring(1));
-					sum += state_probs[cur_index][i];
-				}
-				state_probs[cur_index][i] = 1.0 - sum;
-
-				cur_index++;
-			}
-
-			//System.out.println("[RedCheckError] key = " + key );
-			double error_sum = 0;
-			for(i = 0; i < nstate; i++) {
-				//System.out.println("state[0][" + i + "] = " + state_probs[0][i] );
-				//System.out.println("state[1][" + i + "] = " + state_probs[1][i] );
-				error_sum += Math.abs( state_probs[0][i] - state_probs[1][i] );
-		    }
-			output.collect( new LongWritable(0), new Text("" + error_sum) );
-		}
-    }
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // STAGE 3: Compute Belief
 	//  - Input: current message (bp_message_cur) = {(src, dst, "s" + state1_prob, ..., "s" + state(K-1)_prob)},
@@ -529,10 +456,10 @@ public class BP extends Configured implements Tool
     //////////////////////////////////////////////////////////////////////
     protected Path edge_path = null;
 	protected Path prior_path = null;
-	protected Path message_cur_path = new Path("bp_message_cur");
-	protected Path message_next_path = new Path("bp_message_next");
-	protected Path error_check_path = new Path("bp_error_check");
-	protected Path error_check_sum_path = new Path("bp_error_check_sum");
+	protected Path message_cur_path = new Path("run_tmp/bp_message_cur");
+	protected Path message_next_path = new Path("run_tmp/bp_message_next");
+	protected Path error_check_path = new Path("run_tmp/bp_error_check");
+	protected Path error_check_sum_path = new Path("run_tmp/bp_error_check_sum");
 	protected Path output_path = null;
 	protected long number_nodes = 0;
 	protected int max_iter = 32;
@@ -560,10 +487,8 @@ public class BP extends Configured implements Tool
 		return -1;
     }
 
-	public String read_edge_potential(String input_file)
+    public String read_edge_potential(String input_file)
 	{
-		double [][] ep = new double [nstate][nstate];
-
 		String result_str = "";
 		try {
 			BufferedReader in = new BufferedReader(
@@ -573,7 +498,7 @@ public class BP extends Configured implements Tool
 			while( cur_str != null ) {
 				cur_str = in.readLine();
 				if( cur_str != null ) {
-					if( result_str.length() > 0 )						result_str += "\t";
+					if( result_str.length() > 0 ) result_str += "\t";
 					result_str += cur_str;
 				}
 			}
@@ -585,23 +510,6 @@ public class BP extends Configured implements Tool
 		System.out.println("EDGE_POTENTIAL_STR = [" + result_str + "]");
 
 		return result_str;
-	}
-
-	protected static double getError(Configuration conf, Path error_check_sum_path) throws Exception{
-		FileSystem fs = FileSystem.get(conf);
-		FileSystem lfs = FileSystem.getLocal(conf);
-
-		Path local_error_path = new Path("bp.error");
-		lfs.delete(local_error_path, true);
-
-		copyToLocalFile(conf, error_check_sum_path, local_error_path);
-		System.out.println("HDFS " + error_check_sum_path.toString() + " saved to a local file " + local_error_path.getName());
-
-		double val = readLocaldirOneline(local_error_path.getName());
-
-		//System.out.println("ERROR = " + val);
-
-		return val;
 	}
 
 	protected static void copyToLocalFile(Configuration conf, Path hdfs_path, Path local_path) throws Exception {
@@ -662,27 +570,6 @@ public class BP extends Configured implements Tool
 		  return true;
 		else
 		  return false;
-	}
-
-	protected static double readLocaldirOneline(String new_path) throws Exception
-	{
-		String output_path = new_path + "/part-00000";
-		String str = "";
-		try {
-			BufferedReader in = new BufferedReader(
-				new InputStreamReader(new FileInputStream( output_path ), "UTF8"));
-			str = in.readLine();
-			in.close();
-		} catch (UnsupportedEncodingException e) {
-		} catch (IOException e) {
-		}
-
-		if( str != null ) {
-		    final String[] line = str.split("\t");
-
-			return Double.parseDouble(line[1]);
-		} else
-			return 0;
 	}
 
 	// submit the map/reduce job.
@@ -807,53 +694,6 @@ public class BP extends Configured implements Tool
 
 		return conf;
     }
-
-    protected JobConf configCheckError() throws Exception
-    {
-		final JobConf conf = new JobConf(getConf(), BP.class);
-		conf.set("nstate", "" + nstate);
-		conf.setJobName("BP_Check_Error");
-
-		conf.setMapperClass(MapCheckError.class);
-		conf.setReducerClass(RedCheckError.class);
-
-		fs.delete(error_check_path, true);
-
-		FileInputFormat.setInputPaths(conf, message_cur_path, message_next_path);
-		FileOutputFormat.setOutputPath(conf, error_check_path);
-
-		conf.setNumReduceTasks( nreducer );
-
-		conf.setMapOutputKeyClass(Text.class);
-		conf.setOutputKeyClass(LongWritable.class);
-		conf.setOutputValueClass(Text.class);
-
-		return conf;
-    }
-
-    protected JobConf configCheckErrorSum() throws Exception
-    {
-		final JobConf conf = new JobConf(getConf(), BP.class);
-		conf.set("nstate", "" + nstate);
-		conf.setJobName("BP_Check_Error_Sum");
-
-		conf.setMapperClass(MapIdentityDouble.class);
-		conf.setReducerClass(RedSumDouble.class);
-		conf.setCombinerClass(RedSumDouble.class);
-
-		fs.delete(error_check_sum_path, true);
-
-		FileInputFormat.setInputPaths(conf, error_check_path);
-		FileOutputFormat.setOutputPath(conf, error_check_sum_path);
-
-		conf.setNumReduceTasks( 1 );
-
-		conf.setOutputKeyClass(IntWritable.class);
-		conf.setOutputValueClass(DoubleWritable.class);
-
-		return conf;
-    }
-
 
     protected JobConf configComputeBelief () throws Exception
     {
