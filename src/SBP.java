@@ -50,7 +50,7 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class BP extends Configured implements Tool {
+public class SBP extends Configured implements Tool {
 	// Identity Mapper
 	public static class MapIdentityDouble extends MapReduceBase implements
 			Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
@@ -351,6 +351,182 @@ public class BP extends Configured implements Tool {
 	}
 
 	// //////////////////////////////////////////////////////////////////////////////////////////////
+	// STAGE 2.2: Smooth Messages
+	// - Input: current message (bp_message_cur) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)},
+	// prior matrix(bp_prior) = {(nodeid, "p" + state1_prior, ..., "p" +
+	// state(K-1)_prior)}
+	// - Output: updated message (bp_message_next) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)}
+	// //////////////////////////////////////////////////////////////////////////////////////////////
+	public static class MapSmoothMessage extends MapReduceBase implements
+			Mapper<LongWritable, Text, LongWritable, Text> {
+
+		String prefix = "";
+
+		@Override
+		public void configure(JobConf job) {
+			String input_file = job.get("map.input.file");
+			if(input_file.contains("next")){
+				prefix = "n";
+			}else{
+				prefix = "o";
+			}
+			// System.out.println("[RedUpdateMessage] nstate = " + nstate
+			// + ". Compatibility Matrix=");
+			// for (row = 0; row < nstate; row++) {
+			// for (col = 0; col < nstate; col++) {
+			// System.out.print("" + ep[row][col] + "\t");
+			// }
+			// System.out.println("");
+			// }
+		}
+
+
+		// Identity mapper
+		@Override
+		public void map(final LongWritable key, final Text value,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+			final String[] line = value.toString().split("\t");
+
+			String value_str = "";
+			for (int i = 1; i < line.length; i++) {
+				value_str += line[i];
+				if (i < line.length - 1)
+					value_str += "\t";
+			}
+
+			output.collect(new LongWritable(Long.parseLong(line[0])), new Text(
+					prefix + value_str));
+		}
+	}
+
+	public static class RedSmoothMessage extends MapReduceBase implements
+			Reducer<LongWritable, Text, LongWritable, Text> {
+
+		double[][] ep;
+		int nstate = 2;
+		double LAMBDA = 0;
+
+		@Override
+		public void configure(JobConf job) {
+			LAMBDA = Double.parseDouble(job.get("smooth_lambda"));
+			nstate = Integer.parseInt(job.get("nstate"));
+			String compat_matrix_str = job.get("compat_matrix_str");
+			String[] tokens = compat_matrix_str.split("\t");
+
+			ep = new double[nstate][nstate];
+			int cur_seq = 0;
+			int row, col;
+			for (row = 0; row < nstate; row++) {
+				double cumul_sum = 0;
+				for (col = 0; col < nstate - 1; col++) {
+					ep[row][col] = Double.parseDouble(tokens[cur_seq++]);
+					cumul_sum += ep[row][col];
+				}
+				ep[row][col] = 1 - cumul_sum;
+			}
+
+			// System.out.println("[RedUpdateMessage] nstate = " + nstate
+			// + ". Compatibility Matrix=");
+			// for (row = 0; row < nstate; row++) {
+			// for (col = 0; col < nstate; col++) {
+			// System.out.print("" + ep[row][col] + "\t");
+			// }
+			// System.out.println("");
+			// }
+		}
+		@Override
+		public void reduce(final LongWritable key, final Iterator<Text> values,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+
+			Map<Long, double[]> n_msg_map = new HashMap<Long, double[]>(); // did,
+																			// m_ds(s_1),
+																			// ...,
+																			// m_ds(s_(K-1))
+			Map<Long, double[]> o_msg_map = new HashMap<Long, double[]>();
+
+			// System.out.println("[DEBUG RedStage2] key=" + key.toString() );
+
+			while (values.hasNext()) {
+				String cur_value_str = values.next().toString();
+				// System.out.println("[DEBUG RedStage2] val=" + cur_value_str
+				// );
+				String[] tokens = cur_value_str.substring(1).split("\t");
+				double[] cur_states = new double[nstate];
+				double sum = 0;
+				for (int i = 0; i < nstate - 1; i++) {
+					double cur_state_prob = Double
+							.parseDouble(tokens[i + 1].substring(1));
+					cur_states[i] = cur_state_prob;
+					sum += cur_state_prob;
+				}
+				cur_states[nstate - 1] = 1.0 - sum;
+
+				if(cur_value_str.startsWith("n")){
+					n_msg_map.put(Long.parseLong(tokens[0]), cur_states);
+				}else{
+					o_msg_map.put(Long.parseLong(tokens[0]), cur_states);
+				}
+			}
+
+			// For all the (dst, msg(s1), ..., msg(s(K-1))) in the map, output
+			// updated messages.
+			Long dst = Long.parseLong(key.toString());
+			Iterator it = n_msg_map.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry) it.next();
+
+				long cur_dst = ((Long) pairs.getKey()).longValue();
+				double[] next_msg = (double[]) pairs.getValue();// ((Double)pairs.getValue()).doubleValue();
+				double[] old_msg = o_msg_map.get(cur_dst);
+
+				double[] new_msg = new double[nstate];
+				for (int s = 0; s < nstate; s++) {
+					new_msg[s] = LAMBDA * next_msg[s] + (1.0 - LAMBDA) * old_msg[s];
+//					System.out.println("Merging " + next_msg[s] + ":" + old_msg[s] + ":" + LAMBDA + ":" + new_msg[s]);
+				}
+
+				// System.out.println("[DEBUG] UNNORMALIZED src=" + key.get() +
+				// ", cur_dst=" + cur_dst + ", new_msg[0]=" + new_msg[0] +
+				// ", new_msg[1]=" + new_msg[1]);
+				String debug_saved_str = "";
+				for (int i = 0; i < nstate; i++)
+					debug_saved_str += "s" + new_msg[i];
+
+				// normalize msg
+				double sum = 0;
+				for (int i = 0; i < nstate; i++)
+					sum += new_msg[i];
+
+				for (int i = 0; i < nstate; i++)
+					new_msg[i] /= sum;
+
+				// System.out.println("[DEBUG] NORMALIZED src=" + key.get() +
+				// ", cur_dst=" + cur_dst + ", new_msg[0]=" + new_msg[0] +
+				// ", new_msg[1]=" + (1-new_msg[0]));
+
+				String out_val = "" + cur_dst;
+
+				for (int i = 0; i < nstate - 1; i++) {
+					out_val += "\ts" + new_msg[i];
+
+					if (Double.isNaN(new_msg[i])) {
+						out_val += "DEBUG" + debug_saved_str + "DEBUG";
+					}
+
+				}
+
+				output.collect(new LongWritable(dst), new Text(out_val));
+				// System.out.println(pairs.getKey() + " = " +
+				// pairs.getValue());
+			}
+		}
+	}
+
+	// //////////////////////////////////////////////////////////////////////////////////////////////
 	// STAGE 3: Compute Belief
 	// - Input: current message (bp_message_cur) = {(src, dst, "s" +
 	// state1_prob, ..., "s" + state(K-1)_prob)},
@@ -508,6 +684,7 @@ public class BP extends Configured implements Tool {
 	protected Path prior_path = null;
 	protected Path message_cur_path = new Path("run_tmp/bp_message_cur");
 	protected Path message_next_path = new Path("run_tmp/bp_message_next");
+	protected Path message_smooth_path = new Path("run_tmp/bp_message_smooth");
 	protected Path error_check_path = new Path("run_tmp/bp_error_check");
 	protected Path error_check_sum_path = new Path("run_tmp/bp_error_check_sum");
 	protected Path output_path = null;
@@ -515,12 +692,13 @@ public class BP extends Configured implements Tool {
 	protected int max_iter = 32;
 	protected int nreducer = 1;
 	protected int nstate = 2;
+	protected double lambda = 0.5;
 	String edge_potential_str = "";
 	FileSystem fs;
 
 	// Main entry point.
 	public static void main(final String[] args) throws Exception {
-		final int result = ToolRunner.run(new Configuration(), new BP(), args);
+		final int result = ToolRunner.run(new Configuration(), new SBP(), args);
 
 		System.exit(result);
 	}
@@ -628,7 +806,7 @@ public class BP extends Configured implements Tool {
 	// submit the map/reduce job.
 	@Override
 	public int run(String[] args) throws Exception {
-		if (args.length != 10) {
+		if (args.length != 11) {
 			for (int i = 0; i < args.length; i++) {
 				System.out.println("Args: " + i + " " + args[i]);
 			}
@@ -636,11 +814,7 @@ public class BP extends Configured implements Tool {
 			return printUsage();
 		}
 
-		/*
-		 * String[] newargs = (String[])Array.newInstance(String.class,
-		 * args.length - 1); for(int i=0; i<args.length-1; ++i){ newargs[i] =
-		 * args[i+1]; } args = newargs;
-		 */
+		lambda = Double.parseDouble(args[10]);
 		edge_path = new Path(args[0]);
 		prior_path = new Path(args[1]);
 		output_path = new Path(args[2]);
@@ -666,7 +840,7 @@ public class BP extends Configured implements Tool {
 				+ output_path.toString() + ", |V|=" + number_nodes
 				+ ", nreducer=" + nreducer + ", maxiter=" + max_iter
 				+ ", nstate=" + nstate + ", edge_potential_str="
-				+ edge_potential_str + ", cur_iter=" + cur_iter);
+				+ edge_potential_str + ", cur_iter=" + cur_iter + ", lambda=" + lambda);
 
 		fs = FileSystem.get(getConf());
 
@@ -683,9 +857,11 @@ public class BP extends Configured implements Tool {
 					+ " ***");
 
 			JobClient.runJob(configUpdateMessage());
+			JobClient.runJob(configSmoothMessage());
 			// rotate directory
 			fs.delete(message_cur_path);
-			fs.rename(message_next_path, message_cur_path);
+			fs.delete(message_next_path);
+			fs.rename(message_smooth_path, message_cur_path);
 			fs.delete(output_path);
 			JobConf conf = configComputeBelief();
 			JobClient.runJob(conf);
@@ -717,7 +893,7 @@ public class BP extends Configured implements Tool {
 
 	// Configure pass1
 	protected JobConf configInitMessage() throws Exception {
-		final JobConf conf = new JobConf(getConf(), BP.class);
+		final JobConf conf = new JobConf(getConf(), SBP.class);
 		conf.set("nstate", "" + nstate);
 		conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Init_Belief");
@@ -738,7 +914,7 @@ public class BP extends Configured implements Tool {
 
 	// Configure pass2
 	protected JobConf configUpdateMessage() throws Exception {
-		final JobConf conf = new JobConf(getConf(), BP.class);
+		final JobConf conf = new JobConf(getConf(), SBP.class);
 		conf.set("nstate", "" + nstate);
 		conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Update_message");
@@ -759,8 +935,31 @@ public class BP extends Configured implements Tool {
 		return conf;
 	}
 
+	protected JobConf configSmoothMessage() throws Exception {
+		final JobConf conf = new JobConf(getConf(), SBP.class);
+		conf.set("smooth_lambda", "" + lambda);
+		conf.set("nstate", "" + nstate);
+		conf.set("compat_matrix_str", "" + edge_potential_str);
+		conf.setJobName("BP_Smooth_message");
+
+		fs.delete(message_smooth_path, true);
+
+		conf.setMapperClass(MapSmoothMessage.class);
+		conf.setReducerClass(RedSmoothMessage.class);
+
+		FileInputFormat.setInputPaths(conf, message_cur_path, message_next_path);
+		FileOutputFormat.setOutputPath(conf, message_smooth_path);
+
+		conf.setNumReduceTasks(nreducer);
+
+		conf.setOutputKeyClass(LongWritable.class);
+		conf.setOutputValueClass(Text.class);
+
+		return conf;
+	}
+
 	protected JobConf configComputeBelief() throws Exception {
-		final JobConf conf = new JobConf(getConf(), BP.class);
+		final JobConf conf = new JobConf(getConf(), SBP.class);
 		conf.set("nstate", "" + nstate);
 		conf.set("compat_matrix_str", "" + edge_potential_str);
 		conf.setJobName("BP_Compute_Belief");
