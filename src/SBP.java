@@ -20,7 +20,6 @@ Version: 2.0
  ***********************************************************************/
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -527,6 +525,171 @@ public class SBP extends Configured implements Tool {
 	}
 
 	// //////////////////////////////////////////////////////////////////////////////////////////////
+	// STAGE 2.3: Check Error
+	// - Input: current message (bp_message_cur) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)},
+	// prior matrix(bp_prior) = {(nodeid, "p" + state1_prior, ..., "p" +
+	// state(K-1)_prior)}
+	// - Output: updated message (bp_message_next) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)}
+	// //////////////////////////////////////////////////////////////////////////////////////////////
+	public static class MapCheckErr extends MapReduceBase implements
+			Mapper<LongWritable, Text, LongWritable, Text> {
+
+		String prefix = "";
+
+		@Override
+		public void configure(JobConf job) {
+			String input_file = job.get("map.input.file");
+			if(input_file.contains("cur")){
+				prefix = "o";
+			}else{
+				prefix = "n";
+			}
+//			System.out.println("Processing " + input_file);
+		}
+
+		// Identity mapper
+		@Override
+		public void map(final LongWritable key, final Text value,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+			final String[] line = value.toString().split("\t");
+
+			String value_str = "";
+			for (int i = 1; i < line.length; i++) {
+				value_str += line[i];
+				if (i < line.length - 1)
+					value_str += "\t";
+			}
+
+			output.collect(new LongWritable(Long.parseLong(line[0])), new Text(
+					prefix + value_str));
+		}
+	}
+
+	public static class RedCheckErr extends MapReduceBase implements
+			Reducer<LongWritable, Text, LongWritable, Text> {
+
+		int nstate = 2;
+
+		@Override
+		public void configure(JobConf job) {
+			nstate = Integer.parseInt(job.get("nstate"));
+		}
+		@Override
+		public void reduce(final LongWritable key, final Iterator<Text> values,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+
+			Map<Long, double[]> n_msg_map = new HashMap<Long, double[]>(); // did,
+																			// m_ds(s_1),
+																			// ...,
+																			// m_ds(s_(K-1))
+			Map<Long, double[]> o_msg_map = new HashMap<Long, double[]>();
+
+			// System.out.println("[DEBUG RedStage2] key=" + key.toString() );
+
+			while (values.hasNext()) {
+				String cur_value_str = values.next().toString();
+				// System.out.println("[DEBUG RedStage2] val=" + cur_value_str
+				// );
+				String[] tokens = cur_value_str.substring(1).split("\t");
+				double[] cur_states = new double[nstate];
+				double sum = 0;
+				for (int i = 0; i < nstate - 1; i++) {
+					double cur_state_prob = Double
+							.parseDouble(tokens[i + 1].substring(1));
+					cur_states[i] = cur_state_prob;
+					sum += cur_state_prob;
+				}
+				cur_states[nstate - 1] = 1.0 - sum;
+
+				if(cur_value_str.startsWith("o")){
+					o_msg_map.put(Long.parseLong(tokens[0]), cur_states);
+				}else{
+					n_msg_map.put(Long.parseLong(tokens[0]), cur_states);
+				}
+			}
+
+			// For all the (dst, msg(s1), ..., msg(s(K-1))) in the map, output
+			// updated messages.
+			Iterator it = n_msg_map.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry) it.next();
+
+				long cur_dst = ((Long) pairs.getKey()).longValue();
+				double[] next_msg = (double[]) pairs.getValue();// ((Double)pairs.getValue()).doubleValue();
+				double[] old_msg = o_msg_map.get(cur_dst);
+
+				double diff = 0;
+				for (int s = 0; s < nstate; s++) {
+					diff += Math.abs(next_msg[s] - old_msg[s]);
+				}
+				output.collect(new LongWritable(0), new Text("" + diff));
+			}
+		}
+	}
+
+	// //////////////////////////////////////////////////////////////////////////////////////////////
+	// STAGE 2.3: Sum Error
+	// - Input: current message (bp_message_cur) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)},
+	// prior matrix(bp_prior) = {(nodeid, "p" + state1_prior, ..., "p" +
+	// state(K-1)_prior)}
+	// - Output: updated message (bp_message_next) = {(src, dst, "s" +
+	// state1_prob, ..., "s" + state(K-1)_prob)}
+	// //////////////////////////////////////////////////////////////////////////////////////////////
+	public static class MapSumErr extends MapReduceBase implements
+			Mapper<LongWritable, Text, LongWritable, Text> {
+
+		// Identity mapper
+		@Override
+		public void map(final LongWritable key, final Text value,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+			final String[] line = value.toString().split("\t");
+
+			String value_str = "";
+			for (int i = 1; i < line.length; i++) {
+				value_str += line[i];
+				if (i < line.length - 1)
+					value_str += "\t";
+			}
+
+			output.collect(new LongWritable(Long.parseLong(line[0])), new Text(value_str));
+		}
+	}
+
+	public static class RedSumErr extends MapReduceBase implements
+			Reducer<LongWritable, Text, LongWritable, Text> {
+		int nstate = 2;
+
+		@Override
+		public void configure(JobConf job) {
+			nstate = Integer.parseInt(job.get("nstate"));
+		}
+
+		@Override
+		public void reduce(final LongWritable key, final Iterator<Text> values,
+				final OutputCollector<LongWritable, Text> output,
+				final Reporter reporter) throws IOException {
+
+			long total_cnt = 0;
+			double sum = 0;
+			while (values.hasNext()) {
+				String cur_value_str = values.next().toString();
+				double diff = Double.parseDouble(cur_value_str);
+				if(diff > NEPS * nstate){
+					total_cnt ++;
+				}
+				sum += diff;
+			}
+			output.collect(new LongWritable(total_cnt), new Text("" + sum));
+		}
+	}
+
+	// //////////////////////////////////////////////////////////////////////////////////////////////
 	// STAGE 3: Compute Belief
 	// - Input: current message (bp_message_cur) = {(src, dst, "s" +
 	// state1_prob, ..., "s" + state(K-1)_prob)},
@@ -685,10 +848,10 @@ public class SBP extends Configured implements Tool {
 	protected Path message_cur_path = new Path("run_tmp/bp_message_cur");
 	protected Path message_next_path = new Path("run_tmp/bp_message_next");
 	protected Path message_smooth_path = new Path("run_tmp/bp_message_smooth");
-	protected Path error_check_path = new Path("run_tmp/bp_error_check");
-	protected Path error_check_sum_path = new Path("run_tmp/bp_error_check_sum");
+	protected Path check_error_path = new Path("run_tmp/bp_error_check");
+	protected Path sum_error_path = new Path("run_tmp/bp_error_check_sum");
 	protected Path output_path = null;
-	protected long number_nodes = 0;
+	protected long number_msg = 0;
 	protected int max_iter = 32;
 	protected int nreducer = 1;
 	protected int nstate = 2;
@@ -746,62 +909,24 @@ public class SBP extends Configured implements Tool {
 		fs.copyToLocalFile(hdfs_path, local_path);
 	}
 
-	private static final double EPS = 1e-8;
-	private static final double NEPS = 1e-5;
-
-	protected boolean detectConverge(double threshold, Configuration conf,
-			Path output_path, Path new_local_path, Path prev_local_path)
-			throws Exception {
-		String prev_name = prev_local_path.toString();
-		String new_name = new_local_path.toString();
-		File prev_file = new File(prev_name);
-
-		if (prev_file.exists()) {
-			FileUtils.deleteDirectory(prev_file);
-		} else {
-			copyToLocalFile(conf, output_path, prev_local_path);
-			copyToLocalFile(conf, output_path, new_local_path);
-			System.out.println("**********************");
-			System.out.println("BP: First Run");
-			System.out.println("**********************");
-			return false;
+	protected static String readLocaldirOneline(String new_path) throws Exception
+	{
+		String output_path = new_path + "/part-00000";
+		String str = "";
+		try {
+			BufferedReader in = new BufferedReader(
+				new InputStreamReader(new FileInputStream( output_path ), "UTF8"));
+			str = in.readLine();
+			in.close();
+		} catch (UnsupportedEncodingException e) {
+		} catch (IOException e) {
 		}
 
-		File new_file = new File(new_name);
-		FileUtils.moveDirectory(new_file, prev_file);
-
-		copyToLocalFile(conf, output_path, new_local_path);
-		BufferedReader in_prev = new BufferedReader(new InputStreamReader(
-				new FileInputStream(prev_name + "/part-00000"), "UTF8"));
-		BufferedReader in_new = new BufferedReader(new InputStreamReader(
-				new FileInputStream(new_name + "/part-00000"), "UTF8"));
-		String prev_str;
-		String new_str;
-		double num = 0;
-		while ((prev_str = in_prev.readLine()) != null
-				&& (new_str = in_new.readLine()) != null) {
-			String[] a_prev = prev_str.split("\t");
-			String[] a_new = new_str.split("\t");
-			for (int i = 0; i < nstate; ++i) {
-				double t = Math.abs(Double.valueOf(a_prev[i])
-						- Double.valueOf(a_new[i]));
-				if (t > NEPS) {
-					System.out.println("**********************");
-					System.out.println("BP: Single Node Distance: " + t);
-					System.out.println("**********************");
-					return false;
-				}
-				num += t;
-			}
-		}
-		System.out.println("**********************");
-		System.out.println("BP: Distance: " + num);
-		System.out.println("**********************");
-		if (num < threshold)
-			return true;
-		else
-			return false;
+		return str;
 	}
+
+	private static final double EPS = 1e-6;
+	private static final double NEPS = 1e-5;
 
 	// submit the map/reduce job.
 	@Override
@@ -822,7 +947,7 @@ public class SBP extends Configured implements Tool {
 		Path new_local_path = new Path("run_tmp/new_local/");
 		Path tmp_output_path = new Path(output_path.toString());
 
-		number_nodes = Long.parseLong(args[3]);
+		number_msg = Long.parseLong(args[3]);
 		nreducer = Integer.parseInt(args[4]);
 		nreducer = 1;
 		max_iter = Integer.parseInt(args[5]);
@@ -837,7 +962,7 @@ public class SBP extends Configured implements Tool {
 
 		System.out.println("edge_path=" + edge_path.toString()
 				+ ", prior_path=" + prior_path.toString() + ", output_path="
-				+ output_path.toString() + ", |V|=" + number_nodes
+				+ output_path.toString() + ", |E|=" + number_msg
 				+ ", nreducer=" + nreducer + ", maxiter=" + max_iter
 				+ ", nstate=" + nstate + ", edge_potential_str="
 				+ edge_potential_str + ", cur_iter=" + cur_iter + ", lambda=" + lambda);
@@ -850,7 +975,7 @@ public class SBP extends Configured implements Tool {
 			JobClient.runJob(configInitMessage());
 		}
 
-		double converge_threshold = number_nodes * EPS;
+		double converge_threshold = number_msg * EPS * nstate;
 
 		for (int i = cur_iter; i <= max_iter; i++) {
 			System.out.println("   *** ITERATION " + (i) + "/" + max_iter
@@ -858,28 +983,23 @@ public class SBP extends Configured implements Tool {
 
 			JobClient.runJob(configUpdateMessage());
 			JobClient.runJob(configSmoothMessage());
+			JobClient.runJob(configCheckErr());
+			JobClient.runJob(configSumErr());
+			String line = readLocaldirOneline(sum_error_path.toString());
+			fs.delete(check_error_path, true);
+			fs.delete(sum_error_path, true);
+			String[] parts = line.split("\t");
+			int n = Integer.parseInt(parts[0]);
+			double sum = Double.parseDouble(parts[1]);
+			System.out.println("Converged Msg: " + (number_msg - n));
+			System.out.println("Sum Error: " + sum);
+			if(sum < converge_threshold){
+				break;
+			}
 			// rotate directory
 			fs.delete(message_cur_path);
 			fs.delete(message_next_path);
 			fs.rename(message_smooth_path, message_cur_path);
-			fs.delete(output_path);
-			JobConf conf = configComputeBelief();
-			JobClient.runJob(conf);
-			if (detectConverge(converge_threshold, conf, tmp_output_path,
-					new_local_path, prev_local_path))
-				break;
-		}
-
-		String prev_name = prev_local_path.toString();
-		String new_name = new_local_path.toString();
-		File prev_file = new File(prev_name);
-		File new_file = new File(new_name);
-
-		if (prev_file.exists()) {
-			FileUtils.deleteDirectory(prev_file);
-		}
-		if (new_file.exists()) {
-			FileUtils.deleteDirectory(new_file);
 		}
 
 		System.out.println("BP: Computing beliefs...");
@@ -951,6 +1071,48 @@ public class SBP extends Configured implements Tool {
 		FileOutputFormat.setOutputPath(conf, message_smooth_path);
 
 		conf.setNumReduceTasks(nreducer);
+
+		conf.setOutputKeyClass(LongWritable.class);
+		conf.setOutputValueClass(Text.class);
+
+		return conf;
+	}
+
+	protected JobConf configCheckErr() throws Exception {
+		final JobConf conf = new JobConf(getConf(), SBP.class);
+		conf.set("nstate", "" + nstate);
+		conf.setJobName("BP_Check Err");
+
+		fs.delete(check_error_path, true);
+
+		conf.setMapperClass(MapCheckErr.class);
+		conf.setReducerClass(RedCheckErr.class);
+
+		FileInputFormat.setInputPaths(conf, message_cur_path, message_smooth_path);
+		FileOutputFormat.setOutputPath(conf, check_error_path);
+
+		conf.setNumReduceTasks(nreducer);
+
+		conf.setOutputKeyClass(LongWritable.class);
+		conf.setOutputValueClass(Text.class);
+
+		return conf;
+	}
+
+	protected JobConf configSumErr() throws Exception {
+		final JobConf conf = new JobConf(getConf(), SBP.class);
+		conf.set("nstate", "" + nstate);
+		conf.setJobName("BP_Sum Err");
+
+		fs.delete(sum_error_path, true);
+
+		conf.setMapperClass(MapSumErr.class);
+		conf.setReducerClass(RedSumErr.class);
+
+		FileInputFormat.setInputPaths(conf, check_error_path);
+		FileOutputFormat.setOutputPath(conf, sum_error_path);
+
+		conf.setNumReduceTasks(1);
 
 		conf.setOutputKeyClass(LongWritable.class);
 		conf.setOutputValueClass(Text.class);
