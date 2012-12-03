@@ -1,3 +1,4 @@
+% !Mode:: "TeX:UTF-8"
 \subsection{Convergence Detection}
 
 The graph is loopy in most scenarios, which might cause Belief Propagation could not converge. Although Yedidia had proposed a theory proving when Belief Propagation would converge and get acceptable results, it’s more practical to just run Belief Propagation and wait for it getting converged.
@@ -14,8 +15,8 @@ With above convergence detection mechanism, we can monitor the behavior of algor
 
 As discussed above, BP may not converge in some situations. If there are a lot of loops in the network, and even worse, many messages conflicts with their complement message from the other direction, there will be oscillatory behaviors during the message updating process and make BP never converge. To tackle this problem, Pretti found a method named message smoothing. We implemented this algorithm on BP.
 
-It reduces oscillatory behaviors in the message updating process by smoothing, or damping, messages between two iterations. In the original belief propagation, the messages which node i will send to other nodes are a function of messages sent to node i, which may cause oscillations in loopy networks. We can avoid changing messages too drastically by having a weighted average of the new message and the old message as follows. This can dampen oscillations and increase the chances that it converges.
-            
+It reduces oscillatory behaviors in the message updating process by smoothing, or damping, messages between two iterations. In the original belief propagation, the messages which node $i$ will send to other nodes are a function of messages sent to node $i$, which may cause oscillations in loopy networks. We can avoid changing messages too drastically by having a weighted average of the new message and the old message as follows. This can dampen oscillations and increase the chances that it converges.
+
 Denoting $\bar{m}_{i,j}^{t}(x_{j})$ as the updated message in iteration t obtained by message passing, $\lambda$ as the message smoothing factor, the new message from node $i$ to node $j$ in iteration $t$, denoted by $m_{i,j}^{t}(x_{j})$ is computed as weighted average of the old message and the updated message as
 \begin{equation}
     m_{i,j}^{t}(x_{j}) = (1-\lambda)m_{i,j}^{t-1}(x_{j}) + \lambda\bar{m}_{i,j}^{t}(x_{j})
@@ -39,7 +40,7 @@ In this step, for each class in the $k$ classes, we design a unique $N$ bits cod
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[bb=0 0 680 500,scale=.3]{FIG/code.png} 
+\includegraphics[bb=0 0 680 500,scale=.3]{FIG/code.png}
 \caption{Coding scheme for 10 digits recognizing problem}
 \end{figure}
 
@@ -48,17 +49,17 @@ The meaning of those codes follows the description in the figure 2 from \cite{Th
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[bb=0 0 860 300,scale=.3]{FIG/meaning.png} 
+\includegraphics[bb=0 0 860 300,scale=.3]{FIG/meaning.png}
 \caption{Meaning of each bit}
 \end{figure}
- 
+
 There are basically two principles for design a code\cite{Thomas1995}:
 \begin{enumerate}
-	\item \textbf{Row Distance}: The hamming distance between each two classes' codes should be as large as possible to make classes more distinguishable from each other.
-	\item \textbf{Column Distance}: Each bit classifier should be independent from each other.
-\end{enumerate}  
+    \item \textbf{Row Distance}: The hamming distance between each two classes' codes should be as large as possible to make classes more distinguishable from each other.
+    \item \textbf{Column Distance}: Each bit classifier should be independent from each other.
+\end{enumerate}
 
-It is obvious that there is a trade-off between those two principles, which leads to different code design methods. We will adapt the one described in Thomas's Paper\cite{Thomas1995}, which is every effective to generate compact yet distinguish code. 
+It is obvious that there is a trade-off between those two principles, which leads to different code design methods. We will adapt the one described in Thomas's Paper\cite{Thomas1995}, which is every effective to generate compact yet distinguish code.
 
 \subsubsection*{Running Fast BP for Bits}
 
@@ -69,7 +70,7 @@ As we already described in the previous sections, after designing of code, we ru
 For a node $r$, after computation, we get a vector of predictions of those functions:
 
 \begin{gather*}
-	f(r) = (f_{1}(r)...f_{n}(r)) 
+    f(r) = (f_{1}(r)...f_{n}(r))
 \end{gather*}
 
 
@@ -78,21 +79,21 @@ In order to make final prediction we should find the class which is \textit{clos
 In general, there are different approaches to achieve this:
 
 \begin{enumerate}
-	\item \textbf{Hamming Decoding}: Transform $f(r)$ from real-value to binary value, and calculate the Hamming distance with code of each class. The label that has the shortest hamming distance is chosen.
-	\item \textbf{Loss-based Decoding}: This method is introduced in \cite{Erin2000}, which defines a loss function between probability made by $f$ and the target bit of class, without transform $f(r)$ into binaries.
+    \item \textbf{Hamming Decoding}: Transform $f(r)$ from real-value to binary value, and calculate the Hamming distance with code of each class. The label that has the shortest hamming distance is chosen.
+    \item \textbf{Loss-based Decoding}: This method is introduced in \cite{Erin2000}, which defines a loss function between probability made by $f$ and the target bit of class, without transform $f(r)$ into binaries.
 \end{enumerate}
 
 \subsubsection*{Practical Variations of ECOC}
 
-Error correcting code suffers from one major disadvantage, that is, if the number of classes is large, the number of bits will grow excessively, even exponentially. Sometimes, if the classification algorithm itself is time-consuming, such as Fast BP, even the number of bits is reasonable, ECOC becomes very expensive. 
+Error correcting code suffers from one major disadvantage, that is, if the number of classes is large, the number of bits will grow excessively, even exponentially. Sometimes, if the classification algorithm itself is time-consuming, such as Fast BP, even the number of bits is reasonable, ECOC becomes very expensive.
 
-So we introduce a practical variations of ECOC, called One-VS-All schema. In \cite{Erin2000}, One-VS-All is proved to be a special case of ECOC. 
+So we introduce a practical variation of ECOC, called One-VS-All schema. In \cite{Erin2000}, One-VS-All is proved to be a special case of ECOC.
 
 It follows a very simple strategy: for every class, we train a binary classifier to distinguish whether a node is a class or not. The decision of final label is simple too, we just pick the class that has the highest $YES$ probability. One-VS-All will significantly reduce the number of bits involved, especially when $k$ is large. And as \cite{Ryan2000} suggests, when the underlying binary classifier performs well, One-VS-All works as well as ECOC approach.
 
 %\begin{enumerate}
-%	\item \textbf{One-Vs-All}: In this scheme every class is associated with a classifier that tells whether an incoming example is in this class or not. The final prediction is made according to some predefined decision value, like probability given by Logistics Regression.
-%	\item \textbf{All-Vs-All}: A classifier is trained for every pair of classes. As there are $O(n^{2})$ classifiers to train, some algorithms are introduced to reduce the number of classifier pairs\cite{Platt2000}
+%   \item \textbf{One-Vs-All}: In this scheme every class is associated with a classifier that tells whether an incoming example is in this class or not. The final prediction is made according to some predefined decision value, like probability given by Logistics Regression.
+%   \item \textbf{All-Vs-All}: A classifier is trained for every pair of classes. As there are $O(n^{2})$ classifiers to train, some algorithms are introduced to reduce the number of classifier pairs\cite{Platt2000}
 %\end{enumerate}
 
 Actually, the two schemes are just special case of ECOC, but are much more straight forward.
@@ -110,7 +111,7 @@ b_i(x_k) = \eta\cdot \phi_i(x_k)\cdot\mathop{\prod}_{j\in N(i)}m_{ij}(x_k)
 m_{ij}(x_g)=\mathop{\sum}_{x_k}\phi_{i}(x_g)\cdot \psi_{ij}(x_k,x_g)\cdot\mathop{\prod}_{n\in N(i)\setminus j} m_{ni}(x_k)
 \end{equation}
 
-where $x_k$ is one state for any node and $b_i(x_k)$ is the probability (belief) for node $i$ staying at state $x_k$. So the first step of of approximating the original rules is to remove the product operators. A very intuitive and common method is taking logarithms of both sides. For Eq.(\ref{eq:origbp_b}), it becomes
+where $x_k$ is one state for any node and $b_i(x_k)$ is the probability (belief) for node $i$ staying at state $x_k$. So the first step of approximating the original rules is to remove the product operators. A very intuitive and common method is taking logarithms of both sides. For Eq.(\ref{eq:origbp_b}), it becomes
 \begin{equation}
 \log(b_i(x_k)) = \log(\eta) + \log(\phi_i(x_k)) + \mathop{\sum}_{j\in N(i)}\log(m_{ij}(x_k))
 \end{equation}
@@ -241,7 +242,7 @@ Even though it seems very complicated, all of these equations are very simple, a
 
 \subsubsection{Extended correlation matrix case}
 
-Before we talk about the common correlation matrix, we should think about why the optimization problem proposed above works. See Fig.~\ref{fig:bpexample} for a example part of a small \textbf{BP} network. The idea of the previous optimization problem comes from ignoring the real value of the $m_{ij}$ and $m_{ji}$, but using a generalized variable $m'_{ij}$ to describe the relationship between two nodes $i$ and $j$.
+Before we talk about the common correlation matrix, we should think about why the optimization problem proposed above works. See Fig.~\ref{fig:bpexample} for an example part of a small \textbf{BP} network. The idea of the previous optimization problem comes from ignoring the real value of the $m_{ij}$ and $m_{ji}$, but using a generalized variable $m'_{ij}$ to describe the relationship between two nodes $i$ and $j$.
 
 Assume node $i$ is a labeled node, i.e. $\mathbf{b_i}$ is known, according to last subsection, the value of $\mathbf{m'_{ij}}$ can be bounded by $\mathbf{b_i}$ and $\mathbf{s_i}$. On the other hand, if node $j$ is an unknown (target) node, $\mathbf{b_j}$ can also be bounded by $\mathbf{m'_{ji}}$ and $\mathbf{s_j}$. The key point here is that $\mathbf{m'_{ij}} = \mathbf{m'_{ji}}$. This equation means we can approximate $\mathbf{b_j}$ with $\mathbf{b_i}$, $\mathbf{s_i}$ and $\mathbf{s_j}$. $\mathbf{s_i}$ and $\mathbf{s_j}$ are just the slack variables we defined, and we minimize all the slack variables in the objective functions. In one word, the captured relation between $\mathbf{m'_{ij}}$ and $\mathbf{m'_{ji}}$ can be used to describe the relation between $\mathbf{b_i}$ and $\mathbf{b_{j}}$, which is the objective to be optimized.
 
@@ -251,7 +252,7 @@ Assume node $i$ is a labeled node, i.e. $\mathbf{b_i}$ is known, according to la
 {\caption{Small example of BP network}\label{fig:bpexample}}
 \end{center}
 \end{figure}
- 
+
 Recall that we actually use $\mathbf{m'_{ij}}$ to replace $diag(\mathbf{m_{ji}})\Psi^{-1} \mathbf{m_{ij}}$. Obviously that $\mathbf{m'_{ij}} = \mathbf{m'_{ij}}$ does not hold for common correlation matrix $\Psi$. But if we have
 
 $$\mathbf{m'_{ij}} \approx \mathbf{m'_{ji}}$$
@@ -260,7 +261,7 @@ which holds in some cases, for instance that if $\Psi$ is close to $\mathbf{I}$.
 Due to the limitation of time, there are still two unsolved problems which can be interesting topics for further study. The first one is that we provide an equation system which is used to solve the optimization problem. How to organize these equations into a more concise form is not a easy task. The second problem, how can we derive a upper bound for the distance between the solution to the optimization problem and the solution of the original Belief Propagation algorithm. For example, if we are given $||\mathbf{m'_{ij}} - \mathbf{m'_{ji}}||_F^2 \leq \epsilon$, (here is the componentwise norm, i.e. Frobenius norm), we hope to derive an error upper bound as a function of $\epsilon$. Since we do not have time to implement some experiments to test the accuracy of this method, testing this result on different networks may be the next step.
 
 \subsubsection{Quadratic approximation}
-We also try another direction (relaxing the approximation assumption) to extend the \textbf{FaBP}, even though we do not really figure it out. A significant fact of the original \textbf{FaBP} algorithm is the assumption that all parameters are ``about half'', i.e. close to 1/2. This assumption provides a foundation for the correctness of Maclaurin series expansion used in the analysis. However, when there are more than two classes, without the concept of odd-ratio, we cannot achieve the a similar assumption for any parameter. But we can use the quadratic approximation, i.e. second order Taylor approximation for the logarithms, i.e. instead of using $\log(x) \approx \log(1)+\log^{\prime}(1)(x-1)$ with the assumption that $x$ (the odd-ratio) is close to $\frac{1}{2}$, we use
+We also try another direction (relaxing the approximation assumption) to extend the \textbf{FaBP}, even though we do not really figure it out. A significant fact of the original \textbf{FaBP} algorithm is the assumption that all parameters are ``about half'', i.e. close to 1/2. This assumption provides a foundation for the correctness of Maclaurin series expansion used in the analysis. However, when there are more than two classes, without the concept of odd-ratio, we cannot achieve the similar assumption for any parameter. But we can use the quadratic approximation, i.e. second order Taylor approximation for the logarithms, i.e. instead of using $\log(x) \approx \log(1)+\log^{\prime}(1)(x-1)$ with the assumption that $x$ (the odd-ratio) is close to $\frac{1}{2}$, we use
 $$\log(x)\approx \log(1)+\log^{\prime}(1)(x-1)+\frac{\log^{\prime\prime}(1)}{2}(x-1)^2$$
 without the ``about half'' assumption.
 
@@ -304,7 +305,7 @@ b_i(x_1)&0&0 \\
 0&0&b_i(x_3) \end{array} \right]\vec{\mathbf{1}}= \mathbf{b_i}
 \end{equation}
 
-finally we get
+Finally we get
 \begin{equation}
 \label{eq:newquadraticapprox}
 diag(\mathbf{b_i})
