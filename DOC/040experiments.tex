@@ -1,9 +1,9 @@
 \subsection{Datasets}
-\subsubsection{DBLP dataset and other citation networks}
+\subsubsection{DBLP networks}
 \subsubsection*{Description of Dataset}
-DBLP is a online publication database, focused on Computer Science. 
+DBLP is an online publication database, focused on Computer Science. 
 
-A labelled subset of DBLP is used in our experiment. It consists of 14,376 papers, 14,475 authors, 8920 terms, 20 conferences in total. A fraction of nodes are labelled with which of the following four fields it belongs to, AI, DM,IR and DB. Among the labelled nodes, 4057 authors, 100 paper, 20 conference are included.
+A labeled subset of DBLP is used in our experiment. It consists of 14,376 papers, 14,475 authors, 8920 terms, 20 conferences in total. A fraction of nodes are labeled with which of the following four fields it belongs to, AI, DM,IR and DB. Among the labeled nodes, 4057 authors, 100 paper, 20 conference are included.
 \subsubsection*{Graph Construction and Information}
 The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the Table 1 and 2.
 
@@ -31,18 +31,6 @@ The graph is constructed as follows: we simply put all the nodes together. So it
 \caption{Distribution of labels in DBLP Network}
 \end{table}
 
-The network is illustrated in Figure 3.
-
-\begin{figure}[!ht]
-	\centering
-	\begin{minipage}[b]{0.5\linewidth}
-	\centering
-	\includegraphics[width=\textwidth]{FIG/dblp.png}
-	\caption{Visualization of DBLP network}
-	\label{fig:figure1}
-	\end{minipage}
-\end{figure}	
-
 \subsubsection{Social Networking(KDD Cup 2012)}
 
 \subsubsection*{Description of Dataset}
@@ -59,6 +47,36 @@ Thus, we can keep the users and their bi-directional relationship to get a undir
 
 After filtering the dataset, we extracted all users labeled ``1.1", ``1.4" or ``1.6", constructing a graph with 1741 nodes and 18718 edges.
 
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\toprule
+\textbf{\#nodes} & \textbf{\#edges}\\
+\midrule
+1741 & 18718\\
+\bottomrule
+\end{tabular}
+\caption{Tencent Network}
+
+\begin{tabular}{ccc}
+\toprule
+\textbf{\#1.1} & \textbf{\#1.4} & \textbf{\#1.6}\\
+\midrule
+687 & 524 & 530\\
+\bottomrule
+\end{tabular}
+\caption{Distribution of labels in Tencent Network}
+\end{table}
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.5\linewidth}
+	\centering
+	\includegraphics[width=\textwidth]{FIG/tencent.png}
+	\caption{Visualization of Tencent network}
+	\label{fig:figure2}
+	\end{minipage}
+\end{figure}
 
 \subsubsection{Amazon Product co-purchasing networks}
 
@@ -186,6 +204,19 @@ There is a subtle problem of convergence detection that when we tried it on a la
 
 It would be better if we can detect whether there is a clique of messages which does not exceed the threshold.
 
+\subsubsection{Message Smoothing}
+In some cases where traditional loopy BP cannot converge, message smoothing can help the algorithm to converge. We implemented message smoothing on PEGASUS BP and run it on all of the datasets. We found when the BP can converge without message smoothing, message smoothing actually slows down the convergence, which makes sense because it dampens the message updating process and avoids changing messages too drastically. 
+
+Following graph shows this phenomenon, we can see, eventually both traditional BP and BP with message smoothing converges, but BP with message smoothing converges a little slower. Because BP converges on all of our datasets, we do not have a graph which shows message smoothing helps BP to converge.
+
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=\textwidth]{FIG/smooth.png}
+\caption{BP with Message Smoothing}
+\end{minipage}
+\end{figure}
 
 \subsubsection{ECOC approaches}
 \subsubsection*{Overview}

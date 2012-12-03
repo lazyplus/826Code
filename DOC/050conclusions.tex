@@ -1,1 +1,5 @@
-Pending
+In this project, we studied and explored several aspects of belief propagation. Specifically, we studied the principle of belief propagation and its convergent conditions and how to improve its convergence. We implemented convergence detection and message smoothing on PEGASUS implementation of BP. Experiment shows these two implementations work as expected. We explored how to extend FastBP to multiclass using several different methods, including one-vs-all, ECOC. 
+
+Based on the assumption that the correlation matrix is close to an identity matrix, the final result of BP can be approximated efficiently by an optimization problem. But there are still several problems exist. The first one is that the final solution to the formulated optimization problem still needs to be simplified. The second problem, how can we derive an upper bound for the distance between the solution to the optimization problem and the solution of the original Belief Propagation algorithm. Last but not least, a new approximation for the logarithm operation without any strict assumption may improve the accuracy of the approximation.
+
+We built several networks using real world data, evaluated and analyzed the performance of general BP, FastBP, and our extensions on those networks.

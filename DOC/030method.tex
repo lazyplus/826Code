@@ -7,13 +7,13 @@ When running Belief Propagation, we can simply set the number of iterations afte
 
 We found that it’s a bit difficult for us to tell whether we got the stable answer from BP when we evaluate BP on different datasets. The result would vary if we adjusted the number of iterations. So, we think convergence detection would be very helpful for users running BP on their datasets. It’s even essential for a BP implementation to produce the right answer.
 
-Some discussions on convergence had been proposed by Mooij, they detect convergence by checking the difference between all the new messages and old messages. We followed their work and implemented convergence detection in the same way. Every iteration, we check the difference on every pair of new and old messages and the algorithm stops when all the differences are below threshold.
+Some discussions on convergence had been proposed by Mooij\cite{Mooij05}, they detect convergence by checking the difference between all the new messages and old messages. We followed their work and implemented convergence detection in the same way. Every iteration, we check the difference on every pair of new and old messages and the algorithm stops when all the differences are below threshold.
 
 With above convergence detection mechanism, we can monitor the behavior of algorithm and tune the parameters and algorithm accordingly.
 
 \subsection{Message Smoothing}
 
-As discussed above, BP may not converge in some situations. If there are a lot of loops in the network, and even worse, many messages conflicts with their complement message from the other direction, there will be oscillatory behaviors during the message updating process and make BP never converge. To tackle this problem, Pretti found a method named message smoothing. We implemented this algorithm on BP.
+As discussed above, BP may not converge in some situations. If there are a lot of loops in the network, and even worse, many messages conflicts with their complement message from the other direction, there will be oscillatory behaviors during the message updating process and make BP never converge. To tackle this problem, Pretti\cite{Pretti} found a method named message smoothing. We implemented this algorithm on BP.
 
 It reduces oscillatory behaviors in the message updating process by smoothing, or damping, messages between two iterations. In the original belief propagation, the messages which node $i$ will send to other nodes are a function of messages sent to node $i$, which may cause oscillations in loopy networks. We can avoid changing messages too drastically by having a weighted average of the new message and the old message as follows. This can dampen oscillations and increase the chances that it converges.
 
