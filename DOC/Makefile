@@ -11,9 +11,9 @@ TEXPARTS= 	$(MAIN).tex 		\
 BIBPARTS= BIB/*.bib
 FIGPARTS= FIG/*.pdf FIG/*.png
 STYPARTS= mdwlist.sty
-ALL= makefile  $(TEXPARTS) $(BIBPARTS) $(FIGPARTS) $(STYPARTS) README 
+ALL= $(TEXPARTS) $(BIBPARTS) $(FIGPARTS) $(STYPARTS) README 
 
-$(MAIN).pdf: $(MAIN).tex 
+$(MAIN).pdf: $(MAIN).tex $(TEXPARTS)
 	pdflatex $(MAIN).tex
 	bibtex $(MAIN)
 	pdflatex $(MAIN).tex
