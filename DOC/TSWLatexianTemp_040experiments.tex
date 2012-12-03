@@ -4,8 +4,8 @@
 DBLP is a online publication database, focused on Computer Science. 
 
 A labelled subset of DBLP is used in our experiment. It consists of 14,376 papers, 14,475 authors, 8920 terms, 20 conferences in total. A fraction of nodes are labelled with which of the following four fields it belongs to, AI, DM,IR and DB. Among the labelled nodes, 4057 authors, 100 paper, 20 conference are included.
-\subsubsection*{Graph Construction}
-The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the table below:
+\subsubsection*{Graph Construction and Information}
+The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the Table 1 and 2.
 
 \begin{table}[!ht]
 \centering
@@ -27,12 +27,17 @@ The graph is constructed as follows: we simply put all the nodes together. So it
 \caption{Distribution of labels in DBLP Network}
 \end{table}
 
+The network is illustrated in Figure 3.
 
-
-
-
-\subsubsection*{Other Citation Networks}
-After further inspecting into the datasets, we found that they are not suitable for BP. One major reason is that, BP assume the edge to be undirected, while all the other citation networks, especially whose with little meta data, don't have undirected relationship as the co-author relationship in DBLP. So only DBLP is chosen.
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.5\linewidth}
+	\centering
+	\includegraphics[width=\textwidth]{FIG/dblp.png}
+	\caption{Visualization of DBLP network}
+	\label{fig:figure1}
+	\end{minipage}
+\end{figure}	
 
 \subsubsection{Social Networking(KDD Cup 2012)}
 
@@ -52,16 +57,47 @@ After filtering the dataset, we got 2,087,070 edges in between 463,605 nodes. 6,
 
 
 
-\subsubsection{Product co-purchasing networks}
+\subsubsection{Amazon Product co-purchasing networks}
 
 \subsubsection*{Description of Dataset}
-The Amazon product co-purchasing dataset represents products on Amazon website. The edges represent co-purchasing relationship and all nodes are labeled in four categories: book, music, DVD and videos. There are more meta-information of items such as subjects of the books and ratings from customers.
+This network represents co-purchasing relationship between products on Amazon website. Most nodes fell into four major categories: Book, Music, DVD and Videos. The whole net work consists of 542684 nodes and 3387388 edges in all.
 
-\subsubsection*{Methods of Experiments on Dataset}
 
-Co-purchased products can be similar, i.e. belong to the same category.
-So, we can infer the categories for all products in the co-purchasing network with several seeds in the whole network.
-An even more sophisticated experiment would involve with the subject of items. For example, we can infer the subjects of all the books.
+\subsubsection*{Graph Construction and Information}
+Although the relationship of this network is defined as co-purchasing, actually it is not symmetry. So we first filter a subgraph, in which each edge represents mutual co-purchasing relationship. The basic information of this mutual co-purchasing network is illustrated in Table 3 and 4. 
+
+Because this a huge graph, the full scale picture of this graph mixed everything together and it is hard to tell any useful pattern from this graph, so we randomly sample a 5000 node subgraph, which is shown Figure 5.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}\toprule
+\textbf{\#nodes} & \textbf{\#edges}\\
+\midrule
+393361 & 922867\\
+\bottomrule\end{tabular}
+\caption{Amazon mutual co-purchasing Network}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cccc}\toprule
+\textbf{\#Books} & \textbf{\#Music} & \textbf{\#DVD} & \textbf{\#Video}\\
+\midrule
+287678 & 74867 & 18923 & 11893\\
+\bottomrule\end{tabular}
+\caption{Distribution of labels in Amazon Network}
+\end{table} 
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.5\linewidth}
+	\centering
+	\includegraphics[width=\textwidth]{FIG/amazon.png}
+	\caption{Visualization of Amazon network}
+	\label{fig:figure1}
+	\end{minipage}
+\end{figure}	
+
 
 \subsubsection{Flickr photo network}
 
@@ -78,11 +114,88 @@ We can build a network of photos based on whether two photos share tags. If we b
 With this network of photos, we can run BP and \textbf{FaBP}, and predict the category of photos.
 
 
- \subsection{Preliminary Experiments}
-We did some preliminary experiments on BP and FastBP algorithms.
+\subsection{Experiment Settings}
+\subsubsection*{Overview}
+In order to validate the performance of our proposed methods, on each graph we carried out the following experiments:
+\begin{enumerate}
+	\item \textbf{MBP}: Multiclass BP
+	\item \textbf{OVA}: One-VS-ALL schema using \textbf{FaBP} as underlying classifier
+	%\item \textbf{AVA}: All-VS-All schema using \textbf{FaBP} as underlying classifier
+	\item \textbf{ECOC}: Error correcting code schema using \textbf{FaBP} as underlying classifier
+\end{enumerate}
 
-By extracting all the items, whose groups are DVD, Video and Music from the Amazon co-purchase dataset, we get 149,102 nodes and 253,407 edges connecting them.
-The classification accuracy of BP is around 72\% with 5\% nodes labeled.
+\subsubsection*{Multiclass BP}
+In order to run Multiclass BP, we should first speicfy the following parameters:
+\begin{itemize}
+	\item \textbf{$\phi$} : Priors for all the nodes.
+	\item \textbf{$\psi$} : The correlation matrix which specifies the \textit{closeness} between two of labels. 
+\end{itemize}
 
-We then reduced the dataset to just two types (DVD and Video) of items and run FastBP on it.
-The result shows that there are only 4,274 nodes have non-zero bias from 50\% probability to either type (2,298 (5\%)of them have prior value) after 10 iterations.
+To estimate $\pi$, before each experiment, we randomly select $p\%$ of the set of nodes whose labels are already known to us. The $p\%$ for each graph is listed in Table ?.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c}\toprule
+\textbf{Datasets} & \textbf{p}\\
+\midrule
+DBLP & 20\%\\
+Flickr & 8\%\\
+Tencent & 5\%\\
+Amazon & 10\%\\
+\bottomrule\end{tabular}
+\caption{Percentage of labelled data in prior $\phi$}
+\end{table} 
+
+As to correlation matrix $\phi$, we estimate this matrix using the following strategy: for a pair of given labels, say A and B, we calculate all the edges between the two labels, denoted as $\#(AB)$. For each label, we also compute the number of edges associated with that label, which means all the edges that have at least one end being the given label. In our case, we denote them as $\#(A)$ and $\#(B)$. Then $\psi$ is defined as follows:
+\begin{gather*}
+	\psi_{A\rightarrow B} = \frac{\#(AB)}{\#(A)}\\
+	\psi_{B\rightarrow A} = \frac{\#(AB)}{\#(B)}
+\end{gather*}
+
+Repeat the above procedure for each pair of labels, then we have the estimation of the correlation matrix.
+
+\subsubsection*{One-VS-All with \textbf{FaBP}}
+\textbf{FaBP} algorithm is parameterized by one single important factor: the "about-half" homophily factor, denoted as $h_h$. The bigger $h_h$ means the stronger the homophily phenomenon in the graph.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c}\toprule
+\textbf{Datasets} & \textbf{$h_h$}\\
+\midrule
+DBLP & 0.002\\
+Flickr & 0.2\\
+Tencent & 0.002\\
+Amazon & 0.01\\
+\bottomrule\end{tabular}
+\caption{The homophily factor for each network}
+\end{table} 
+
+As to the prior $\phi$, we follows the same settings with \textbf{MBP}.
+
+When the algorithm finished, for each node, say $N$, we combine all the k probabilities $P(N=k_i)$ in a vector, which specifies how likely the given node is within that class. Then we pick the class that has the greatest $P(N=k_i)$ as the label of that node.
+
+\subsubsection*{ECOC with \textbf{FaBP}}
+The settings of prior $\phi$ and homophily factor $h_h$ is the same as those in \textbf{OVS}.
+
+When coming to the code design, we adopts the exhaustive algorithm described in \cite{Thomas1995}. When given $k$ labels, each label is encoded using $2^{k-1}-1$ bits. For the first class, we encode it using all ones. For the second class, we set the first $2^{k-2}$ bits of its coding as zeros, then the next $2^{k-2}-1$ bits as ones. For the third class, we set the first $2^{k-3}$ bits as zeros, the following $2^{k-3}$ as ones, which are followed by $2^{k-3}-1$ zeros. Repeating the this procedure until all the classes are defined. The code matrix when $k=4$ is illustrated in Table 6.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|ccccccc}\toprule
+\textbf{class} & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+\midrule
+1 & 1 & 1 & 1 & 1 & 1 & 1 & 1\\
+2 & 0 & 0 & 0 & 0 & 1 & 1 & 1\\
+3 & 0 & 0 & 1 & 1 & 0 & 0 & 1\\
+4 & 0 & 1 & 0 & 1 & 0 & 1 & 0\\
+\bottomrule\end{tabular}
+\caption{The homophily factor for each network}
+\end{table} 
+
+
+
+
+
+
+
+

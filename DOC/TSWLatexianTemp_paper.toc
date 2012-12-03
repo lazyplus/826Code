@@ -17,9 +17,10 @@
 \contentsline {subsubsection}{\numberline {4.1.2}Social Networking(KDD Cup 2012)}{13}
 \contentsline {subsubsection}{\numberline {4.1.3}Amazon Product co-purchasing networks}{14}
 \contentsline {subsubsection}{\numberline {4.1.4}Flickr photo network}{14}
-\contentsline {subsection}{\numberline {4.2}Preliminary Experiments}{16}
-\contentsline {section}{\numberline {A}Appendix}{18}
-\contentsline {subsection}{\numberline {A.1}List of Innovations}{18}
-\contentsline {subsection}{\numberline {A.2}Labor Division}{18}
-\contentsline {subsection}{\numberline {A.3}Activities}{18}
-\contentsline {subsection}{\numberline {A.4}Previous Labor Division}{18}
+\contentsline {subsection}{\numberline {4.2}Experiment Settings}{16}
+\contentsline {subsection}{\numberline {4.3}Experiment Results}{18}
+\contentsline {section}{\numberline {A}Appendix}{20}
+\contentsline {subsection}{\numberline {A.1}List of Innovations}{20}
+\contentsline {subsection}{\numberline {A.2}Labor Division}{20}
+\contentsline {subsection}{\numberline {A.3}Activities}{20}
+\contentsline {subsection}{\numberline {A.4}Previous Labor Division}{20}

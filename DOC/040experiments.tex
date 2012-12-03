@@ -99,9 +99,6 @@ Because this a huge graph, the full scale picture of this graph mixed everything
 \end{figure}	
 
 
-
-
-
 \subsubsection{Flickr photo network}
 
 \subsubsection*{Description of Dataset}
@@ -117,11 +114,110 @@ We can build a network of photos based on whether two photos share tags. If we b
 With this network of photos, we can run BP and \textbf{FaBP}, and predict the category of photos.
 
 
- \subsection{Preliminary Experiments}
-We did some preliminary experiments on BP and FastBP algorithms.
+\subsection{Experiment Settings}
+\subsubsection*{Overview}
+In order to validate the performance of our proposed methods, on each graph we carried out the following experiments:
+\begin{enumerate}
+	\item \textbf{MBP}: Multiclass BP
+	\item \textbf{OVA}: One-VS-ALL schema using \textbf{FaBP} as underlying classifier
+	%\item \textbf{AVA}: All-VS-All schema using \textbf{FaBP} as underlying classifier
+	\item \textbf{ECOC}: Error correcting code schema using \textbf{FaBP} as underlying classifier
+\end{enumerate}
 
-By extracting all the items, whose groups are DVD, Video and Music from the Amazon co-purchase dataset, we get 149,102 nodes and 253,407 edges connecting them.
-The classification accuracy of BP is around 72\% with 5\% nodes labeled.
+\subsubsection*{Multiclass BP}
+In order to run Multiclass BP, we should first speicfy the following parameters:
+\begin{itemize}
+	\item \textbf{$\phi$} : Priors for all the nodes.
+	\item \textbf{$\psi$} : The correlation matrix which specifies the \textit{closeness} between two of labels. 
+\end{itemize}
 
-We then reduced the dataset to just two types (DVD and Video) of items and run FastBP on it.
-The result shows that there are only 4,274 nodes have non-zero bias from 50\% probability to either type (2,298 (5\%)of them have prior value) after 10 iterations.
+To estimate $\pi$, before each experiment, we randomly select $p\%$ of the set of nodes whose labels are already known to us. The $p\%$ for each graph is listed in Table ?.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c}\toprule
+\textbf{Datasets} & \textbf{p}\\
+\midrule
+DBLP & 20\%\\
+Flickr & 8\%\\
+Tencent & 5\%\\
+Amazon & 30\%\\
+\bottomrule\end{tabular}
+\caption{Percentage of labelled data in prior $\phi$}
+\end{table} 
+
+As to correlation matrix $\phi$, we estimate this matrix using the following strategy: for a pair of given labels, say A and B, we calculate all the edges between the two labels, denoted as $\#(AB)$. For each label, we also compute the number of edges associated with that label, which means all the edges that have at least one end being the given label. In our case, we denote them as $\#(A)$ and $\#(B)$. Then $\psi$ is defined as follows:
+\begin{gather*}
+	\psi_{A\rightarrow B} = \frac{\#(AB)}{\#(A)}\\
+	\psi_{B\rightarrow A} = \frac{\#(AB)}{\#(B)}
+\end{gather*}
+
+Repeat the above procedure for each pair of labels, then we have the estimation of the correlation matrix.
+
+\subsubsection*{One-VS-All with \textbf{FaBP}}
+\textbf{FaBP} algorithm is parameterized by one single important factor: the "about-half" homophily factor, denoted as $h_h$. The bigger $h_h$ means the stronger the homophily phenomenon in the graph.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c}\toprule
+\textbf{Datasets} & \textbf{$h_h$}\\
+\midrule
+DBLP & 0.002\\
+Flickr & 0.2\\
+Tencent & 0.002\\
+Amazon & 0.01\\
+\bottomrule\end{tabular}
+\caption{The homophily factor for each network}
+\end{table} 
+
+As to the prior $\phi$, we follows the same settings with \textbf{MBP}.
+
+When the algorithm finished, for each node, say $N$, we combine all the k probabilities $P(N=k_i)$ in a vector, which specifies how likely the given node is within that class. Then we pick the class that has the greatest $P(N=k_i)$ as the label of that node.
+
+\subsubsection*{ECOC with \textbf{FaBP}}
+The settings of prior $\phi$ and homophily factor $h_h$ is the same as those in \textbf{OVS}.
+
+When coming to the code design, we adopts the exhaustive algorithm described in \cite{Thomas1995}. When given $k$ labels, each label is encoded using $2^{k-1}-1$ bits. For the first class, we encode it using all ones. For the second class, we set the first $2^{k-2}$ bits of its coding as zeros, then the next $2^{k-2}-1$ bits as ones. For the third class, we set the first $2^{k-3}$ bits as zeros, the following $2^{k-3}$ as ones, which are followed by $2^{k-3}-1$ zeros. Repeating the this procedure until all the classes are defined. 
+
+The code matrix when $k=4$ is illustrated in Table 7.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|ccccccc}\toprule
+\textbf{class} & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+\midrule
+1 & 1 & 1 & 1 & 1 & 1 & 1 & 1\\
+2 & 0 & 0 & 0 & 0 & 1 & 1 & 1\\
+3 & 0 & 0 & 1 & 1 & 0 & 0 & 1\\
+4 & 0 & 1 & 0 & 1 & 0 & 1 & 0\\
+\bottomrule\end{tabular}
+\caption{Code design when $k=4$}
+\end{table}
+
+As described in \textbf{Methods} section, we run \textbf{FaBP} for each bit. For each node, after we get the probability vector, we transform it into a binary vector, using the following strategy: for a given bit $b_i$, if $P(b_i=1) > 0.5$, then the corresponding position of the binary vector is set to 1, else to zero. Then we calculated the Hamming distance between this vector and coding vector of each class, the one has the smallest distance is assigned to the node. 
+
+\subsection{Experiment Results}
+All the results are illustrated in the following table.
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|ccc}\toprule
+\textbf{Datasets} & \textbf{MBP} & \textbf{OVS} & \textbf{ECOC}\\
+\midrule
+DBLP & \\
+Flickr & 0.2\\
+Tencent & 0.002\\
+Amazon & 0.01\\
+\bottomrule\end{tabular}
+\caption{The homophily factor for each network}
+\end{table} 
+
+
+
+
+
+
+
+
+
+
+
