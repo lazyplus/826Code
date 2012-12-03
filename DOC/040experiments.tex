@@ -115,13 +115,79 @@ There are 22,872 photos that have at least one tag in this dataset. Tags are fro
 
 The photos are manually annotated with one or more of the 24 categories like ‘animals’, ‘baby’, ‘indoor’ etc. There are 24,581 photos with at least one category. For photos with at least one category, each of them is associated with 3.8 categories on average.  The most widely used category is ‘people’ (10,373 times) followed by ‘structures’ (9992 times). 
 
-\subsubsection*{Methods of Experiments on Dataset}
-We can build a network of photos based on whether two photos share tags. If we build a network of photos based on whether two photos share 1 tag, the average degree is 781. If we build a network of photos based on whether 2 photos share at least two tags, the average degree is 92. If we build a network of photos based on whether two photos share at least 3 tags, the average degree is 16. In later experiment, we can try different network building criterion.
+\subsubsection*{Graph Construction and Information}
+We extracted a subgraph built using photos with only one of the annotations 'people', 'structures' or 'plant\_life', and linked photos if they share at least three tags. In this graph, there are 6131 nodes. 
 
-With this network of photos, we can run BP and \textbf{FaBP}, and predict the category of photos.
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\toprule
+\textbf{\#nodes} & \textbf{\#edges}\\
+\midrule
+6131 & 114698\\
+\bottomrule
+\end{tabular}
+\caption{Flickr Network}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{ccc}
+\toprule
+\textbf{\#People} & \textbf{\#Structures} & \textbf{\#Plant\_life}\\
+\midrule
+2030 & 1974 & 2127\\
+\bottomrule
+\end{tabular}
+\caption{Distribution of labels in Flickr Network}
+\end{table}
+
+Following is the number of edges between each annotation,
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c|c|c}
+\toprule
+& people & structures & plant\_life\\
+people & 19520 & 8742 & 9032\\
+structures & 8742 & 18050 & 18038\\
+plant\_life & 9032 & 18038 & 41316\\
+\bottomrule
+\end{tabular}
+\caption{Transition Matrix of Flickr Network}
+\end{table}
+
+The network is illustrated in Figure 3.
+
+\begin{figure}[!ht]
+	\centering
+	\begin{minipage}[b]{0.5\linewidth}
+	\centering
+	\includegraphics[width=\textwidth]{FIG/flickr.png}
+	\caption{Visualization of Flickr network}
+	\label{fig:figure1}
+	\end{minipage}
+\end{figure}	
+
+\subsection{Experiment}
+\subsubsection{Convergence Detection}
+We run general BP on all of our datasets and figure X is the plot of the percent of converged messages on each iteration:
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=\textwidth]{FIG/Converge.png}
+\caption{Convergence vs iteration}
+\end{minipage}
+\end{figure}	
+
+As the plot shows, some dataset needs more iteration to get a satisfiable number of converged messages. This is why we think convergence detection is worth to be implemented.
+
+There is a subtle problem of convergence detection that when we tried it on a large graph (Amazon co-purchase data), the graph got converged quickly even some messages were still thrashing. This is because most of the messages got stable and dragged the average difference lower enough to pass the threshold.
+
+It would be better if we can detect whether there is a clique of messages which does not exceed the threshold.
 
 
-\subsection{Experiment Settings}
+\subsubsection{ECOC approaches}
 \subsubsection*{Overview}
 In order to validate the performance of our proposed methods, on each graph we carried out the following experiments:
 \begin{enumerate}
@@ -186,7 +252,7 @@ As to the prior $\phi$, we follows the same settings with \textbf{MBP}.
 When the algorithm finished, for each node, say $N$, we combine all the k probabilities $P(N=k_i)$ in a vector, which specifies how likely the given node is within that class. Then we pick the class that has the greatest $P(N=k_i)$ as the label of that node.
 
 \subsubsection*{ECOC with \textbf{FaBP}}
-The settings of prior $\phi$ and homophily factor $h_h$ is the same as those in \textbf{OVS}.
+The settings of prior $\phi$ and homophily factor $h_h$ is the same as those in \textbf{OVA}.
 
 When coming to the code design, we adopts the exhaustive algorithm described in \cite{Thomas1995}. When given $k$ labels, each label is encoded using $2^{k-1}-1$ bits. For the first class, we encode it using all ones. For the second class, we set the first $2^{k-2}$ bits of its coding as zeros, then the next $2^{k-2}-1$ bits as ones. For the third class, we set the first $2^{k-3}$ bits as zeros, the following $2^{k-3}$ as ones, which are followed by $2^{k-3}-1$ zeros. Repeating the this procedure until all the classes are defined. 
 
@@ -210,12 +276,12 @@ The code matrix when $k=4$ is illustrated in Table 7.
 As described in \textbf{Methods} section, we run \textbf{FaBP} for each bit. For each node, after we get the probability vector, we transform it into a binary vector, using the following strategy: for a given bit $b_i$, if $P(b_i=1) > 0.5$, then the corresponding position of the binary vector is set to 1, else to zero. Then we calculated the Hamming distance between this vector and coding vector of each class, the one has the smallest distance is assigned to the node. 
 
 \subsection{Experiment Results}
-All the results are illustrated in the following table.
+All the results are illustrated in the following table. The metric we use here is the accuracy of label prediction of the nodes whose labels are not used as prior in the experiment.
 \begin{table}[!ht]
 \centering
 \begin{tabular}{c|ccc}
 \toprule
-\textbf{Datasets} & \textbf{MBP} & \textbf{OVS} & \textbf{ECOC}\\
+\textbf{Datasets} & \textbf{MBP} & \textbf{OVA} & \textbf{ECOC}\\
 \midrule
 DBLP &0.17 &\textbf{0.776} &0.726\\
 Flickr & \textbf{0.653} & 0.421 & 0.13\\
@@ -223,10 +289,19 @@ Tencent & 0.953 & \textbf{0.961} & 0.924\\
 Amazon & \textbf{0.736} & 0.636 & 0.626\\
 \bottomrule
 \end{tabular}
-\caption{The homophily factor for each network}
-\end{table} 
+\caption{Experiment result for different networks}
+\end{table}
 
+\subsubsection*{Result Analysis}
+From Table 8, we can see that \textbf{MBP} achieves highest accuracy in Flickr and Amazon dataset, but did worst in DBLP dataset. 
 
+After further study of the result, we find out \textbf{MBP} gives every node the same label except those whose labels are already used as prior in Amazon and DBLP dataset. In DBLP network, \textbf{MBP} gives every node the label "DM", while in Amazon network, \textbf{MBP} labels every node as "Books". On the contrary,  \textbf{OVA} and \textbf{ECOC} gives out much "smooth" results, a significant amount of "Music","DVD" and "Video" are correctly labelled. This tells us that accuracy alone is misleading. If the underlying label distribution is not as skew as the amazon dataset but more like the DBLP network in which there isn't a dominant label, then the performance of \textbf{MBP} worsens greatly. 
+
+On the other hand, the \textbf{OVA} scheme achieves best average performance over all datasets. Comparing to the other two methods, its performance is more stable. It is more "fault-tolerant" in the sense that it is immune from the underlying distribution of labels.
+
+As to ECOC methods, it gains relative the similar accuracy with \textbf{OVA} method in 3 networks. In all the networks we tested, its performance is always slightly lower than \textbf{OVA} method. One possible explanation is that, as the number of labels is relatively small in our experiment. When $k=3$, the number of bits are also 3. So ECOC method can not set apart from \textbf{OVA}. Another possible explanation is that as the result gives by \textbf{FaBP} is not accurate and very close to $0.5$, so the more accurate technique that uses loss based function to decide label is useless in our setting, but the Hamming distance based method loses information from original probabilities, so the result is not as good as \textbf{OVA}.
+
+\subsubsection*{Particular Analysis for Flickr Dataset}
 
 
 
