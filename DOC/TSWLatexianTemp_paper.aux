@@ -32,39 +32,58 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3}Proposed Method}{8}}
 \newlabel{sec:proposed}{{3}{8}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Convergence Detection}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Message Smoothing}{9}}
 \citation{Thomas1995}
 \citation{Thomas1995}
 \citation{Thomas1995}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Methods for Extending Fast BP to Multiclass Problems}{9}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Error Correcting Code Methods}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Coding scheme for 10 digits recognizing problem}}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Methods for Extending Fast BP to Multiclass Problems}{10}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Error Correcting Code Methods}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Coding scheme for 10 digits recognizing problem}}{10}}
 \citation{Erin2000}
 \citation{Erin2000}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Meaning of each bit}}{10}}
 \citation{Ryan2000}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Quadratic approximation for FaBP extension}{11}}
-\newlabel{eq:quadratic approx}{{7}{11}}
-\newlabel{eq:newquadraticapprox}{{11}{12}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{12}}
-\newlabel{sec:experiments}{{4}{12}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Datasets}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}DBLP dataset and other citation networks}{12}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces DBLP Network}}{13}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Distribution of labels in DBLP Network}}{13}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Visualization of DBLP network}}{13}}
-\newlabel{fig:figure1}{{3}{13}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Social Networking(KDD Cup 2012)}{13}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Amazon Product co-purchasing networks}{14}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Amazon mutual co-purchasing Network}}{14}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Distribution of labels in Amazon Network}}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Flickr photo network}{14}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Visualization of Amazon network}}{15}}
-\newlabel{fig:figure1}{{4}{15}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Experiment Settings}{16}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Percentage of labelled data in prior $\phi $}}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Meaning of each bit}}{11}}
+\citation{KoutraKKCPF11}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}FastBP for Multiple Classes}{12}}
+\newlabel{eq:origbp_b}{{7}{12}}
+\newlabel{eq:origbp_m}{{8}{12}}
+\newlabel{equ:bfnewrule_b}{{15}{13}}
+\newlabel{equ:bfnewrule_m}{{16}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Simple correlation matrix case}{13}}
+\newlabel{equ:simplecorrelation}{{17}{13}}
+\newlabel{equ:kkt1}{{19}{14}}
+\newlabel{equ:kkt2}{{20}{14}}
+\newlabel{equ:kkt3}{{21}{14}}
+\newlabel{equ:kkt4}{{22}{14}}
+\newlabel{equ:kkt5}{{23}{14}}
+\newlabel{equ:kkt6}{{24}{14}}
+\newlabel{equ:kkt7}{{25}{14}}
+\newlabel{equ:kkt8}{{26}{14}}
+\newlabel{equ:kkt9}{{27}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Extended correlation matrix case}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Small example of BP network}}{15}}
+\newlabel{fig:bpexample}{{3}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}Quadratic approximation}{15}}
+\newlabel{eq:newquadraticapprox}{{30}{16}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{16}}
+\newlabel{sec:experiments}{{4}{16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Datasets}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}DBLP dataset and other citation networks}{16}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces DBLP Network}}{17}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Distribution of labels in DBLP Network}}{17}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Visualization of DBLP network}}{17}}
+\newlabel{fig:figure1}{{4}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Social Networking(KDD Cup 2012)}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Amazon Product co-purchasing networks}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Amazon mutual co-purchasing Network}}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Distribution of labels in Amazon Network}}{19}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Visualization of Amazon network}}{19}}
+\newlabel{fig:figure1}{{5}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Flickr photo network}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Experiment Settings}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Percentage of labelled data in prior $\phi $}}{20}}
 \citation{Thomas1995}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The homophily factor for each network}}{17}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Code design when $k=4$}}{17}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The homophily factor for each network}}{21}}
 \bibdata{BIB/christosref,BIB/other}
 \bibcite{Thomas1995}{1}
 \bibcite{And04efficientbelief}{2}
@@ -73,17 +92,18 @@
 \bibcite{KoutraKKCPF11}{5}
 \bibcite{Kschischang98factorgraphs}{6}
 \bibcite{Erin2000}{7}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Code design when $k=4$}}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Experiment Results}{22}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces The homophily factor for each network}}{22}}
 \bibcite{Malewicz2010:PSL:1807167.1807184}{8}
 \bibcite{Malioutov2006}{9}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Experiment Results}{18}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces The homophily factor for each network}}{18}}
 \bibcite{Platt00largemargin}{10}
 \bibcite{Ryan2000}{11}
 \bibcite{Yedidia:2003:UBP}{12}
 \bibcite{Yedidia05constructingfree}{13}
 \bibstyle{plain}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Appendix}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}List of Innovations}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Labor Division}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Activities}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Previous Labor Division}{20}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Appendix}{24}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}List of Innovations}{24}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Labor Division}{24}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Activities}{24}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Previous Labor Division}{24}}
