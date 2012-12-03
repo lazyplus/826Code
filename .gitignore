@@ -6,6 +6,12 @@ result.*
 run_tmp/
 *.result
 
+# Latex #
+#########
+*.aux
+*.bbl
+*.toc
+
 # Eclipse project #
 ###################
 .classpath
