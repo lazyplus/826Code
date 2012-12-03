@@ -1,4 +1,16 @@
-826Code
-=======
+Belief Propagation and Multi-Class Extension of FastBP
 
-Codebase for 826
+This package contains implementation of Belief Propagation and Multi-Class extensions of FastBP, such as One-vs-All and ECOC.
+
+To run Belief Propagation, prepare all your edges in bp.edge, correlation (transition) matrix in bp.ep and some priors in bp.prior. Then execute do_bp.sh would compile programs and execute BP. The parameters are max_iteration, num_states, num_edges.
+
+To run FastBP, prepare all your edges in lbp.edge and some priors in lbp.prior. Then execute do_lbp.sh would compile programs and execute FastBP. The parameters are num_nodes, max_iteration, the "about-half" homophily factor.
+
+To run Belief Propagation with message smoothing, prepare all your data as you did for BP, then run do_sbp.sh would compile programs and execute BP with message smoothing. The parameters are max_iteration, num_states, num_edges, lambda for smoothing.
+
+To run One-vs-All extension for FastBP, prepare all your edges in lbp.edge and all nodes' priors in lbp.all.prior. Change the parameters at the beginning of do_one_vs_all_lbp.sh and execute it.
+
+To run ECOC extension for FastBP, prepare all your data as you did for One-vs-All and then execute do_ecoc_lbp.sh.
+
+
+This package needs support for Java Runtime Environment.

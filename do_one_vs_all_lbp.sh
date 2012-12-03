@@ -1,9 +1,9 @@
 #!/bin/bash
 
-N_STATE=3
+N_STATE=4
 ITER=5
-HH=0.2
-GIVE_PRIOR=87
+HH=0.000002
+GIVE_PRIOR=800
 NODE_NUM=$(cat lbp.all.prior | wc -l)
 
 ./shuffle.py < lbp.all.prior > lbp.prior.all.tmp
