@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: paper.aux
+The style file: plain.bst
+Database file #1: BIB/christosref.bib
+Database file #2: BIB/other.bib
+Warning--empty booktitle in Yedidia:2003:UBP
+You've used 13 entries,
+            2118 wiz_defined-function locations,
+            1300 strings with 18248 characters,
+and the built_in function-call counts, 5141 in all, are:
+= -- 521
+> -- 230
+< -- 7
++ -- 91
+- -- 78
+* -- 340
+:= -- 817
+add.period$ -- 42
+call.type$ -- 13
+change.case$ -- 78
+chr.to.int$ -- 0
+cite$ -- 14
+duplicate$ -- 212
+empty$ -- 393
+format.name$ -- 78
+if$ -- 1111
+int.to.chr$ -- 0
+int.to.str$ -- 13
+missing$ -- 13
+newline$ -- 68
+num.names$ -- 26
+pop$ -- 84
+preamble$ -- 1
+purify$ -- 65
+quote$ -- 0
+skip$ -- 164
+stack$ -- 0
+substring$ -- 340
+swap$ -- 70
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 52
+warning$ -- 1
+while$ -- 49
+width$ -- 15
+write$ -- 148
+(There was 1 warning)

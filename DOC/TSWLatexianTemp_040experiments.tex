@@ -4,8 +4,8 @@
 DBLP is a online publication database, focused on Computer Science. 
 
 A labelled subset of DBLP is used in our experiment. It consists of 14,376 papers, 14,475 authors, 8920 terms, 20 conferences in total. A fraction of nodes are labelled with which of the following four fields it belongs to, AI, DM,IR and DB. Among the labelled nodes, 4057 authors, 100 paper, 20 conference are included.
-\subsubsection*{Graph Construction and Information}
-The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the Table 1 and 2.
+\subsubsection*{Graph Construction}
+The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the table below:
 
 \begin{table}[!ht]
 \centering
@@ -27,17 +27,12 @@ The graph is constructed as follows: we simply put all the nodes together. So it
 \caption{Distribution of labels in DBLP Network}
 \end{table}
 
-The network is illustrated in Figure 3.
 
-\begin{figure}[!ht]
-	\centering
-	\begin{minipage}[b]{0.5\linewidth}
-	\centering
-	\includegraphics[width=\textwidth]{FIG/dblp.png}
-	\caption{Visualization of DBLP network}
-	\label{fig:figure1}
-	\end{minipage}
-\end{figure}	
+
+
+
+\subsubsection*{Other Citation Networks}
+After further inspecting into the datasets, we found that they are not suitable for BP. One major reason is that, BP assume the edge to be undirected, while all the other citation networks, especially whose with little meta data, don't have undirected relationship as the co-author relationship in DBLP. So only DBLP is chosen.
 
 \subsubsection{Social Networking(KDD Cup 2012)}
 
@@ -57,50 +52,16 @@ After filtering the dataset, we got 2,087,070 edges in between 463,605 nodes. 6,
 
 
 
-\subsubsection{Amazon Product co-purchasing networks}
+\subsubsection{Product co-purchasing networks}
 
 \subsubsection*{Description of Dataset}
-This network represents co-purchasing relationship between products on Amazon website. Most nodes fell into four major categories: Book, Music, DVD and Videos. The whole net work consists of 542684 nodes and 3387388 edges in all.
+The Amazon product co-purchasing dataset represents products on Amazon website. The edges represent co-purchasing relationship and all nodes are labeled in four categories: book, music, DVD and videos. There are more meta-information of items such as subjects of the books and ratings from customers.
 
+\subsubsection*{Methods of Experiments on Dataset}
 
-\subsubsection*{Graph Construction and Information}
-Although the relationship of this network is defined as co-purchasing, actually it is not symmetry. So we first filter a subgraph, in which each edge represents mutual co-purchasing relationship. The basic information of this mutual co-purchasing network is illustrated in Table 3 and 4. 
-
-Because this a huge graph, the full scale picture of this graph mixed everything together and it is hard to tell any useful pattern from this graph, so we randomly sample a 5000 node subgraph, which is shown Figure 5.
-
-\begin{table}[!ht]
-\centering
-\begin{tabular}{cc}\toprule
-\textbf{\#nodes} & \textbf{\#edges}\\
-\midrule
-393361 & 922867\\
-\bottomrule\end{tabular}
-\caption{Amazon mutual co-purchasing Network}
-\end{table}
-
-\begin{table}[!ht]
-\centering
-\begin{tabular}{cccc}\toprule
-\textbf{\#Books} & \textbf{\#Music} & \textbf{\#DVD} & \textbf{\#Video}\\
-\midrule
-287678 & 74867 & 18923 & 11893\\
-\bottomrule\end{tabular}
-\caption{Distribution of labels in Amazon Network}
-\end{table} 
-
-\begin{figure}[!ht]
-	\centering
-	\begin{minipage}[b]{0.5\linewidth}
-	\centering
-	\includegraphics[width=\textwidth]{FIG/amazon.png}
-	\caption{Visualization of Amazon network}
-	\label{fig:figure1}
-	\end{minipage}
-\end{figure}	
-
-
-
-
+Co-purchased products can be similar, i.e. belong to the same category.
+So, we can infer the categories for all products in the co-purchasing network with several seeds in the whole network.
+An even more sophisticated experiment would involve with the subject of items. For example, we can infer the subjects of all the books.
 
 \subsubsection{Flickr photo network}
 

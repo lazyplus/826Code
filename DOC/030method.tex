@@ -53,7 +53,6 @@ For a node $r$, after computation, we get a vector of predictions of those funct
 \end{gather*}
 
 
-
 In order to make final prediction we should find the class which is \textit{closest} to $f(r)$.
 
 In general, there are different approaches to achieve this:
@@ -63,14 +62,18 @@ In general, there are different approaches to achieve this:
 	\item \textbf{Loss-based Decoding}: This method is introduced in \cite{Erin2000}, which defines a loss function between probability made by $f$ and the target bit of class, without transform $f(r)$ into binaries.
 \end{enumerate}
 
-\subsubsection*{Practical Scheme for too Many Labels}
+\subsubsection*{Practical Variations of ECOC}
 
-Error Correcting Code is a powerful tool, but in a distributed environment, if the number of labels is large, it may be very expensive, because it requires to run Fast BP for every bit. So in order to make error correcting code more practical, we introduce the following two scheme:
+Error correcting code suffers from one major disadvantage, that is, if the number of classes is large, the number of bits will grow excessively, even exponentially. Sometimes, if the classification algorithm itself is time-consuming, such as Fast BP, even the number of bits is reasonable, ECOC becomes very expensive. 
 
-\begin{enumerate}
-	\item \textbf{One-Vs-All}: In this scheme every class is associated with a classifier that tells whether an incoming example is in this class or not. The final prediction is made according to some predefined decision value, like probability given by Logistics Regression.
-	\item \textbf{All-Vs-All}: A classifier is trained for every pair of classes. As there are $O(n^{2})$ classifiers to train, some algorithms are introduced to reduce the number of classifier pairs\cite{Platt2000}
-\end{enumerate}
+So we introduce a practical variations of ECOC, called One-VS-All schema. In \cite{Erin2000}, One-VS-All is proved to be a special case of ECOC. 
+
+It follows a very simple strategy: for every class, we train a binary classifier to distinguish whether a node is a class or not. The decision of final label is simple too, we just pick the class that has the highest $YES$ probability. One-VS-All will significantly reduce the number of bits involved, especially when $k$ is large. And as \cite{Ryan2000} suggests, when the underlying binary classifier performs well, One-VS-All works as well as ECOC approach.
+
+%\begin{enumerate}
+%	\item \textbf{One-Vs-All}: In this scheme every class is associated with a classifier that tells whether an incoming example is in this class or not. The final prediction is made according to some predefined decision value, like probability given by Logistics Regression.
+%	\item \textbf{All-Vs-All}: A classifier is trained for every pair of classes. As there are $O(n^{2})$ classifiers to train, some algorithms are introduced to reduce the number of classifier pairs\cite{Platt2000}
+%\end{enumerate}
 
 Actually, the two schemes are just special case of ECOC, but are much more straight forward.
 
