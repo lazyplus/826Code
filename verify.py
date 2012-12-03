@@ -42,6 +42,8 @@ for line in result:
     tokens = line.split('\t')
     for i in range(1, len(tokens)):
         v.append(float(tokens[i]))
+    if tokens[0] not in tag:
+        continue
     rtag = find_tag(v)
     if rtag != tag[tokens[0]] :
         Wrong += 1
@@ -53,3 +55,5 @@ for line in result:
 print Wrong
 print Correct
 print res_cnt
+print float(Correct) / (Correct + Wrong)
+
