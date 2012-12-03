@@ -1,3 +1,6 @@
+all: paper.pdf
+	./do_bp.sh 5 3 4
+
 paper.pdf:
 	./make_doc.sh
 
