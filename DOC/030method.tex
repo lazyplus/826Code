@@ -20,7 +20,7 @@ In this step, for each class in the $k$ classes, we design a unique $N$ bits cod
 \begin{figure}[!htbp]
 \centering
 \includegraphics[bb=0 0 680 500,scale=.3]{FIG/code.png} 
-\caption{Coding scheme for 10 digits recongizing problem}
+\caption{Coding scheme for 10 digits recognizing problem}
 \end{figure}
 
 The meaning of those codes follows the description in the figure 2 from \cite{Thomas1995}.
@@ -65,7 +65,7 @@ In general, there are different approaches to achieve this:
 
 \subsubsection*{Practical Scheme for too Many Labels}
 
-Error Correcting Code is a powerful tool, but in a distributed environment, if the number of label is large, it may be very expensive, because it requires to run Fast BP for every bit. So in order to make error correcting code more practical, we introduce the following two scheme:
+Error Correcting Code is a powerful tool, but in a distributed environment, if the number of labels is large, it may be very expensive, because it requires to run Fast BP for every bit. So in order to make error correcting code more practical, we introduce the following two scheme:
 
 \begin{enumerate}
 	\item \textbf{One-Vs-All}: In this scheme every class is associated with a classifier that tells whether an incoming example is in this class or not. The final prediction is made according to some predefined decision value, like probability given by Logistics Regression.
@@ -199,7 +199,7 @@ An even more sophisticated experiment would involve with the subject of items. F
 \subsubsection{Flickr photo network}
 
 \subsubsection*{Description of Dataset}
-This data set is from MIR (Multimedia Information Retrieval) FLICKR Retrival Evaluation.In this dataset, photos are associated with one or more tags from Flickr user. Photos are also annotated manually by annotator with a category. We build this network of photos based on whether two photos share same tags. 
+This data set is from MIR (Multimedia Information Retrieval) FLICKR Retrieval Evaluation.In this dataset, photos are associated with one or more tags from Flickr user. Photos are also annotated manually by annotator with a category. We build this network of photos based on whether two photos share same tags. 
 
 There are 22,872 photos that have at least one tag in this dataset. Tags are from Flickr users, like ‘dog’, ‘doors’, ‘ocean’ etc. For photos with at least one tag, each of them is associated with 9.8 tags on average. The photo with largest number of tags has 75 tags. The photo with smallest number of tags has only 1 tag. The number of photos only with 1 tag is 813. The number of photos with 2 tags is 987.
 

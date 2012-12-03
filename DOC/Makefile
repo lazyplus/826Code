@@ -13,7 +13,7 @@ FIGPARTS= FIG/*.pdf FIG/*.png
 STYPARTS= mdwlist.sty
 ALL= makefile  $(TEXPARTS) $(BIBPARTS) $(FIGPARTS) $(STYPARTS) README 
 
-$(MAIN).pdf: $(MAIN).tex
+$(MAIN).pdf: $(MAIN).tex 
 	pdflatex $(MAIN).tex
 	bibtex $(MAIN)
 	pdflatex $(MAIN).tex
