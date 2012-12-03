@@ -5,10 +5,11 @@ DBLP is an online publication database, focused on Computer Science.
 
 A labeled subset of DBLP is used in our experiment. It consists of 14,376 papers, 14,475 authors, 8920 terms, 20 conferences in total. A fraction of nodes are labeled with which of the following four fields it belongs to, AI, DM,IR and DB. Among the labeled nodes, 4057 authors, 100 paper, 20 conference are included.
 \subsubsection*{Graph Construction and Information}
-The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the Table 1 and 2.
+The graph is constructed as follows: we simply put all the nodes together. So it will be heterogeneous. The basic information about this graph is shown in the following table.
 
 \begin{table}[!ht]
 \centering
+\subtable[DBLP Network]{
 \begin{tabular}{cc}
 \toprule
 \textbf{\#nodes} & \textbf{\#edges}\\
@@ -16,11 +17,8 @@ The graph is constructed as follows: we simply put all the nodes together. So it
 4177 & 170794\\
 \bottomrule
 \end{tabular}
-\caption{DBLP Network}
-\end{table}
-
-\begin{table}[!ht]
-\centering
+}
+\subtable[Label distribution]{
 \begin{tabular}{cccc}
 \toprule
 \textbf{\#DB} & \textbf{\#DM} & \textbf{\#AI} & \textbf{\#IR}\\
@@ -28,7 +26,7 @@ The graph is constructed as follows: we simply put all the nodes together. So it
 1230 & 763 & 1029 & 1155\\
 \bottomrule
 \end{tabular}
-\caption{Distribution of labels in DBLP Network}
+}
 \end{table}
 
 \subsubsection{Social Networking(KDD Cup 2012)}
@@ -49,6 +47,7 @@ After filtering the dataset, we extracted all users labeled ``1.1", ``1.4" or ``
 
 \begin{table}[!ht]
 \centering
+\subtable[Tencent Network]{
 \begin{tabular}{cc}
 \toprule
 \textbf{\#nodes} & \textbf{\#edges}\\
@@ -56,8 +55,8 @@ After filtering the dataset, we extracted all users labeled ``1.1", ``1.4" or ``
 1741 & 18718\\
 \bottomrule
 \end{tabular}
-\caption{Tencent Network}
-
+}
+\subtable[Label distribution]{
 \begin{tabular}{ccc}
 \toprule
 \textbf{\#1.1} & \textbf{\#1.4} & \textbf{\#1.6}\\
@@ -65,8 +64,25 @@ After filtering the dataset, we extracted all users labeled ``1.1", ``1.4" or ``
 687 & 524 & 530\\
 \bottomrule
 \end{tabular}
-\caption{Distribution of labels in Tencent Network}
+}
 \end{table}
+
+Following is the number of edges between each categories:
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{c|c|c|c}
+\toprule
+& 1.1 & 1.4 & 1.6\\
+\midrule
+1.1 & 5976 & 66 & 19\\
+1.4 & 66 & 2940 & 20\\
+1.6 & 19 & 20 & 9592\\
+\bottomrule
+\end{tabular}
+\caption{Transition Matrix of Tencent Network}
+\end{table}
+
 
 \begin{figure}[!ht]
 	\centering
@@ -81,16 +97,17 @@ After filtering the dataset, we extracted all users labeled ``1.1", ``1.4" or ``
 \subsubsection{Amazon Product co-purchasing networks}
 
 \subsubsection*{Description of Dataset}
-This network represents co-purchasing relationship between products on Amazon website. Most nodes fell into four major categories: Book, Music, DVD and Videos. The whole net work consists of 542684 nodes and 3387388 edges in all.
+This network represents co-purchasing relationship between products on Amazon website. Most nodes fall into four major categories: Book, Music, DVD and Videos. The whole net work consists of 542684 nodes and 3387388 edges in all.
 
 
 \subsubsection*{Graph Construction and Information}
-Although the relationship of this network is defined as co-purchasing, actually it is not symmetry. So we first filter a subgraph, in which each edge represents mutual co-purchasing relationship. The basic information of this mutual co-purchasing network is illustrated in Table 3 and 4. 
+Although the relationship of this network is defined as co-purchasing, actually it is not symmetry. So we first filter a subgraph, in which each edge represents mutual co-purchasing relationship. The basic information of this mutual co-purchasing network is illustrated in the following tables. 
 
-Because this a huge graph, the full scale picture of this graph mixed everything together and it is hard to tell any useful pattern from this graph, so we randomly sample a 5000 node subgraph, which is shown Figure 5.
+Because this is a huge graph, the full scale picture of this graph mixed everything together and it is hard to tell any useful pattern from this graph, so we randomly sample a 5000 node subgraph, which is shown Figure 5.
 
 \begin{table}[!ht]
 \centering
+\subtable[Co-purchasing Network]{
 \begin{tabular}{cc}
 \toprule
 \textbf{\#nodes} & \textbf{\#edges}\\
@@ -98,11 +115,8 @@ Because this a huge graph, the full scale picture of this graph mixed everything
 393361 & 922867\\
 \bottomrule
 \end{tabular}
-\caption{Amazon mutual co-purchasing Network}
-\end{table}
-
-\begin{table}[!ht]
-\centering
+}
+\subtable[Label distribution]{
 \begin{tabular}{cccc}
 \toprule
 \textbf{\#Books} & \textbf{\#Music} & \textbf{\#DVD} & \textbf{\#Video}\\
@@ -110,7 +124,7 @@ Because this a huge graph, the full scale picture of this graph mixed everything
 287678 & 74867 & 18923 & 11893\\
 \bottomrule
 \end{tabular}
-\caption{Distribution of labels in Amazon Network}
+}
 \end{table} 
 
 \begin{figure}[!ht]
@@ -127,17 +141,18 @@ Because this a huge graph, the full scale picture of this graph mixed everything
 \subsubsection{Flickr photo network}
 
 \subsubsection*{Description of Dataset}
-This data set is from MIR (Multimedia Information Retrieval) FLICKR Retrieval Evaluation.In this dataset, photos are associated with one or more tags from Flickr user. Photos are also annotated manually by annotator with a category. We build this network of photos based on whether two photos share same tags. 
+This data set is from MIR (Multimedia Information Retrieval) FLICKR Retrieval Evaluation.In this dataset, photos are associated with one or more tags from Flickr users. Photos are also annotated manually by annotators with a category. We build this network of photos based on whether two photos share same tags. 
 
-There are 22,872 photos that have at least one tag in this dataset. Tags are from Flickr users, like ‘dog’, ‘doors’, ‘ocean’ etc. For photos with at least one tag, each of them is associated with 9.8 tags on average. The photo with largest number of tags has 75 tags. The photo with smallest number of tags has only 1 tag. The number of photos only with 1 tag is 813. The number of photos with 2 tags is 987.
+There are 22,872 photos that have at least one tag in this dataset. Tags are from Flickr users, like ``dog", ``doors", ``ocean" etc. For photos with at least one tag, each of them is associated with 9.8 tags on average. The photo with largest number of tags has 75 tags. The photo with smallest number of tags has only 1 tag. The number of photos only with 1 tag is 813. The number of photos with 2 tags is 987.
 
-The photos are manually annotated with one or more of the 24 categories like ‘animals’, ‘baby’, ‘indoor’ etc. There are 24,581 photos with at least one category. For photos with at least one category, each of them is associated with 3.8 categories on average.  The most widely used category is ‘people’ (10,373 times) followed by ‘structures’ (9992 times). 
+The photos are manually annotated with one or more of the 24 categories like ``animals", ``baby", ``indoor" etc. There are 24,581 photos with at least one category. For photos with at least one category, each of them is associated with 3.8 categories on average.  The most widely used category is ``people" (10,373 times) followed by ``structures" (9992 times). 
 
 \subsubsection*{Graph Construction and Information}
-We extracted a subgraph built using photos with only one of the annotations 'people', 'structures' or 'plant\_life', and linked photos if they share at least three tags. In this graph, there are 6131 nodes. 
+We extracted a subgraph using photos with only one of the annotations ``people", ``structures" or ``plant\_life", and linked photos if they share at least three tags. In this graph, there are 6131 nodes. 
 
 \begin{table}[!ht]
 \centering
+\subtable[Flickr Network]{
 \begin{tabular}{cc}
 \toprule
 \textbf{\#nodes} & \textbf{\#edges}\\
@@ -145,11 +160,8 @@ We extracted a subgraph built using photos with only one of the annotations 'peo
 6131 & 114698\\
 \bottomrule
 \end{tabular}
-\caption{Flickr Network}
-\end{table}
-
-\begin{table}[!ht]
-\centering
+}
+\subtable[Label distribution]{
 \begin{tabular}{ccc}
 \toprule
 \textbf{\#People} & \textbf{\#Structures} & \textbf{\#Plant\_life}\\
@@ -157,7 +169,7 @@ We extracted a subgraph built using photos with only one of the annotations 'peo
 2030 & 1974 & 2127\\
 \bottomrule
 \end{tabular}
-\caption{Distribution of labels in Flickr Network}
+}
 \end{table}
 
 Following is the number of edges between each annotation,
@@ -166,6 +178,7 @@ Following is the number of edges between each annotation,
 \begin{tabular}{c|c|c|c}
 \toprule
 & people & structures & plant\_life\\
+\midrule
 people & 19520 & 8742 & 9032\\
 structures & 8742 & 18050 & 18038\\
 plant\_life & 9032 & 18038 & 41316\\
@@ -174,7 +187,7 @@ plant\_life & 9032 & 18038 & 41316\\
 \caption{Transition Matrix of Flickr Network}
 \end{table}
 
-The network is illustrated in Figure 3.
+The network is illustrated in Figure 6.
 
 \begin{figure}[!ht]
 	\centering
@@ -186,56 +199,25 @@ The network is illustrated in Figure 3.
 	\end{minipage}
 \end{figure}	
 
-\subsection{Experiment}
-\subsubsection{Convergence Detection}
-We run general BP on all of our datasets and figure X is the plot of the percent of converged messages on each iteration:
-\begin{figure}[!ht]
-\centering
-\begin{minipage}[b]{0.5\linewidth}
-\centering
-\includegraphics[width=\textwidth]{FIG/Converge.png}
-\caption{Convergence vs iteration}
-\end{minipage}
-\end{figure}	
-
-As the plot shows, some dataset needs more iteration to get a satisfiable number of converged messages. This is why we think convergence detection is worth to be implemented.
-
-There is a subtle problem of convergence detection that when we tried it on a large graph (Amazon co-purchase data), the graph got converged quickly even some messages were still thrashing. This is because most of the messages got stable and dragged the average difference lower enough to pass the threshold.
-
-It would be better if we can detect whether there is a clique of messages which does not exceed the threshold.
-
-\subsubsection{Message Smoothing}
-In some cases where traditional loopy BP cannot converge, message smoothing can help the algorithm to converge. We implemented message smoothing on PEGASUS BP and run it on all of the datasets. We found when the BP can converge without message smoothing, message smoothing actually slows down the convergence, which makes sense because it dampens the message updating process and avoids changing messages too drastically. 
-
-Following graph shows this phenomenon, we can see, eventually both traditional BP and BP with message smoothing converges, but BP with message smoothing converges a little slower. Because BP converges on all of our datasets, we do not have a graph which shows message smoothing helps BP to converge.
-
-\begin{figure}[!ht]
-\centering
-\begin{minipage}[b]{0.5\linewidth}
-\centering
-\includegraphics[width=\textwidth]{FIG/smooth.png}
-\caption{BP with Message Smoothing}
-\end{minipage}
-\end{figure}
-
+\subsection{Experiment Settings}
 \subsubsection{ECOC approaches}
 \subsubsection*{Overview}
 In order to validate the performance of our proposed methods, on each graph we carried out the following experiments:
 \begin{enumerate}
 	\item \textbf{MBP}: Multiclass BP
-	\item \textbf{OVA}: One-VS-ALL schema using \textbf{FaBP} as underlying classifier
+	\item \textbf{OVA}: One-vs-All schema using \textbf{FaBP} as underlying classifier
 	%\item \textbf{AVA}: All-VS-All schema using \textbf{FaBP} as underlying classifier
 	\item \textbf{ECOC}: Error correcting code schema using \textbf{FaBP} as underlying classifier
 \end{enumerate}
 
 \subsubsection*{Multiclass BP}
-In order to run Multiclass BP, we should first speicfy the following parameters:
+In order to run Multiclass BP, we should first specify the following parameters:
 \begin{itemize}
 	\item \textbf{$\phi$} : Priors for all the nodes.
-	\item \textbf{$\psi$} : The correlation matrix which specifies the \textit{closeness} between two of labels. 
+	\item \textbf{$\psi$} : The correlation matrix which specifies the \textit{closeness} between two labels. 
 \end{itemize}
 
-To estimate $\pi$, before each experiment, we randomly select $p\%$ of the set of nodes whose labels are already known to us. The $p\%$ for each graph is listed in Table ?.
+To estimate $\phi$, before each experiment, we randomly select $p\%$ of the set of nodes whose labels are already known to us. The $p\%$ for each graph is listed in Table 3.
 
 \begin{table}[!ht]
 \centering
@@ -252,7 +234,7 @@ Amazon & 30\%\\
 \caption{Percentage of labelled data in prior $\phi$}
 \end{table} 
 
-As to correlation matrix $\phi$, we estimate this matrix using the following strategy: for a pair of given labels, say A and B, we calculate all the edges between the two labels, denoted as $\#(AB)$. For each label, we also compute the number of edges associated with that label, which means all the edges that have at least one end being the given label. In our case, we denote them as $\#(A)$ and $\#(B)$. Then $\psi$ is defined as follows:
+As to correlation matrix $\psi$, we estimate this matrix using the following strategy: for a pair of given labels, say A and B, we calculate all the edges between the two labels, denoted as $\#(AB)$. For each label, we also compute the number of edges associated with that label, which means all the edges that have at least one end being the given label. In our case, we denote them as $\#(A)$ and $\#(B)$. Then $\psi$ is defined as follows:
 \begin{gather*}
 	\psi_{A\rightarrow B} = \frac{\#(AB)}{\#(A)}\\
 	\psi_{B\rightarrow A} = \frac{\#(AB)}{\#(B)}
@@ -261,7 +243,7 @@ As to correlation matrix $\phi$, we estimate this matrix using the following str
 Repeat the above procedure for each pair of labels, then we have the estimation of the correlation matrix.
 
 \subsubsection*{One-VS-All with \textbf{FaBP}}
-\textbf{FaBP} algorithm is parameterized by one single important factor: the "about-half" homophily factor, denoted as $h_h$. The bigger $h_h$ means the stronger the homophily phenomenon in the graph.
+\textbf{FaBP} algorithm is parameterized by one single important factor: the ``about-half" homophily factor, denoted as $h_h$. The bigger $h_h$ means the stronger the homophily phenomenon in the graph.
 
 \begin{table}[!ht]
 \centering
@@ -278,16 +260,16 @@ Amazon & 0.01\\
 \caption{The homophily factor for each network}
 \end{table} 
 
-As to the prior $\phi$, we follows the same settings with \textbf{MBP}.
+As to the prior $\phi$, we follow the same settings with \textbf{MBP}.
 
-When the algorithm finished, for each node, say $N$, we combine all the k probabilities $P(N=k_i)$ in a vector, which specifies how likely the given node is within that class. Then we pick the class that has the greatest $P(N=k_i)$ as the label of that node.
+When the algorithm finishes, for each node, say $N$, we combine all the k probabilities $P(N=k_i)$ in a vector, which specifies how likely the given node is within that class. Then we pick the class that has the greatest $P(N=k_i)$ as the label of that node.
 
 \subsubsection*{ECOC with \textbf{FaBP}}
-The settings of prior $\phi$ and homophily factor $h_h$ is the same as those in \textbf{OVA}.
+The settings of prior $\phi$ and homophily factor $h_h$ are the same as those in \textbf{OVA}.
 
-When coming to the code design, we adopts the exhaustive algorithm described in \cite{Thomas1995}. When given $k$ labels, each label is encoded using $2^{k-1}-1$ bits. For the first class, we encode it using all ones. For the second class, we set the first $2^{k-2}$ bits of its coding as zeros, then the next $2^{k-2}-1$ bits as ones. For the third class, we set the first $2^{k-3}$ bits as zeros, the following $2^{k-3}$ as ones, which are followed by $2^{k-3}-1$ zeros. Repeating the this procedure until all the classes are defined. 
+When coming to the code design, we adopt the exhaustive algorithm described in \cite{Thomas1995}. When given $k$ labels, each label is encoded using $2^{k-1}-1$ bits. For the first class, we encode it using all ones. For the second class, we set the first $2^{k-2}$ bits of its coding as zeros, then the next $2^{k-2}-1$ bits as ones. For the third class, we set the first $2^{k-3}$ bits as zeros, the following $2^{k-3}$ as ones, which are followed by $2^{k-3}-1$ zeros. Repeating the this procedure until all the classes are defined. 
 
-The code matrix when $k=4$ is illustrated in Table 7.
+The code matrix when $k=4$ is illustrated in Table 5.
 
 \begin{table}[!ht]
 \centering
@@ -307,6 +289,38 @@ The code matrix when $k=4$ is illustrated in Table 7.
 As described in \textbf{Methods} section, we run \textbf{FaBP} for each bit. For each node, after we get the probability vector, we transform it into a binary vector, using the following strategy: for a given bit $b_i$, if $P(b_i=1) > 0.5$, then the corresponding position of the binary vector is set to 1, else to zero. Then we calculated the Hamming distance between this vector and coding vector of each class, the one has the smallest distance is assigned to the node. 
 
 \subsection{Experiment Results}
+\subsubsection{Convergence Detection}
+We run general BP on all of our datasets and figure 7 is the plot of the percent of converged messages over each iteration:
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=\textwidth]{FIG/Converge.png}
+\caption{Convergence vs iteration}
+\end{minipage}
+\end{figure}	
+
+As the plot shows, some dataset needs more iterations to get a satisfying number of converged messages. This is why we think convergence detection is worth implementing.
+
+There is a subtle problem of convergence detection that when we tried it on a large graph (Amazon co-purchase data), the graph got converged quickly even some messages were still thrashing. This is because most of the messages got stable and dragged the average difference lower enough to pass the threshold.
+
+It would be better if we can detect whether there is a clique of messages which does not exceed the threshold.
+
+\subsubsection{Message Smoothing}
+In some cases where traditional loopy BP cannot converge, message smoothing can help the algorithm to converge. We implemented message smoothing on PEGASUS BP and run it on all of the datasets. We found when the BP can converge without message smoothing, message smoothing actually slows down the convergence, which makes sense because it dampens the message updating process and avoids changing messages too drastically. 
+
+Following graph shows this phenomenon, we can see, eventually both traditional BP and BP with message smoothing converges, but BP with message smoothing converges a little slower. Because BP converges on all of our datasets, we do not have a graph which shows message smoothing helps BP to converge.
+
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=\textwidth]{FIG/smooth.png}
+\caption{BP with Message Smoothing}
+\end{minipage}
+\end{figure}
+
+\subsubsection{Multiclass extension evaluation}
 All the results are illustrated in the following table. The metric we use here is the accuracy of label prediction of the nodes whose labels are not used as prior in the experiment.
 \begin{table}[!ht]
 \centering
@@ -324,21 +338,16 @@ Amazon & \textbf{0.736} & 0.636 & 0.626\\
 \end{table}
 
 \subsubsection*{Result Analysis}
-From Table 8, we can see that \textbf{MBP} achieves highest accuracy in Flickr and Amazon dataset, but did worst in DBLP dataset. 
+From Table 6, we can see that \textbf{MBP} achieves highest accuracy in Flickr and Amazon dataset, but did worst in DBLP dataset. 
 
-After further study of the result, we find out \textbf{MBP} gives every node the same label except those whose labels are already used as prior in Amazon and DBLP dataset. In DBLP network, \textbf{MBP} gives every node the label "DM", while in Amazon network, \textbf{MBP} labels every node as "Books". On the contrary,  \textbf{OVA} and \textbf{ECOC} gives out much "smooth" results, a significant amount of "Music","DVD" and "Video" are correctly labelled. This tells us that accuracy alone is misleading. If the underlying label distribution is not as skew as the amazon dataset but more like the DBLP network in which there isn't a dominant label, then the performance of \textbf{MBP} worsens greatly. 
+After further study of the result, we find out \textbf{MBP} gives every node the same label except those whose labels are already used as prior in Amazon and DBLP dataset. In DBLP network, \textbf{MBP} gives every node the label "DM", while in Amazon network, \textbf{MBP} labels every node as "Books". On the contrary,  \textbf{OVA} and \textbf{ECOC} gives out much "smooth" results, a significant amount of "Music","DVD" and "Video" are correctly labeled. This tells us that accuracy alone is misleading. If the underlying label distribution is not as skew as the amazon dataset but more like the DBLP network in which there isn't a dominant label, then the performance of \textbf{MBP} worsens greatly. 
 
 On the other hand, the \textbf{OVA} scheme achieves best average performance over all datasets. Comparing to the other two methods, its performance is more stable. It is more "fault-tolerant" in the sense that it is immune from the underlying distribution of labels.
 
-As to ECOC methods, it gains relative the similar accuracy with \textbf{OVA} method in 3 networks. In all the networks we tested, its performance is always slightly lower than \textbf{OVA} method. One possible explanation is that, as the number of labels is relatively small in our experiment. When $k=3$, the number of bits are also 3. So ECOC method can not set apart from \textbf{OVA}. Another possible explanation is that as the result gives by \textbf{FaBP} is not accurate and very close to $0.5$, so the more accurate technique that uses loss based function to decide label is useless in our setting, but the Hamming distance based method loses information from original probabilities, so the result is not as good as \textbf{OVA}.
+As to ECOC methods, it gains relative the similar accuracy with \textbf{OVA} method in 3 networks. In all the networks we tested, its performance is always slightly lower than \textbf{OVA} method. One possible explanation is that, the number of labels is relatively small in our experiment. When $k=3$, the number of bits is also 3. So ECOC method can not set apart from \textbf{OVA}. Another possible explanation is that as the result gives by \textbf{FaBP} is not accurate and very close to $0.5$, the more accurate technique that uses loss based function to decide label is useless in our setting, but the Hamming distance based method loses information from original probabilities, so the result is not as good as \textbf{OVA}.
 
-\subsubsection*{Particular Analysis for Flickr Dataset}
+We can also observe that those methods work better on some datasets than other. The possible reasons are as follows.
 
+If the transition matrix of a network has significant difference between each value in one row, BP works well. For example, in a network with three labels A, B, C, if the transition probability from A to A, A to B, A to C defers a lot, BP performs well. We can see, from the network of Tencent, the transition probability from each label to itself is much larger than the transition probability to the other two labels. We can also see this property on the network plot of Tencent dataset: each label forms a cluster and separated from the other two labels. The result of BP on Tencent dataset is more accurate compared with other datasets. On contrary, from the Flickr dataset, we can see the three values in each row of the transition matrix are close to each other. For example, the transition probability from ``structures" to ``structures" and the transition probability from ``structures" to ``plant\_life" are almost the same. We can also see this property from the plot of Flickr network, in which nodes of the three labels are mixed together. As a result, the BP does not work well on Flickr dataset compared to on Tencent dataset. 
 
-
-
-
-
-
-
-
+For the one-vs-all method, we treat all labels other than A as NOT A. Then we run FastBP on this newly built network and get the probability of being A for each node. This method can be problematic if the transition probability of the newly mixed label NOT A is different from that of original labels. In our experiment, the transition property of each label in Tencent dataset is similar, so this one-vs-all FastBP achieves close results as BP on this dataset. On contrary, the transition properties of any two labels in the Flickr dataset are so different that they can hardly be merged without losing their own characteristics. So the result of one-vs-all FastBP is worse than result of BP.
