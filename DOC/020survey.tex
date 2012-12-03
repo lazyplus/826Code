@@ -1,0 +1,205 @@
+Next we list the papers that each member read,
+along with their summary and critique.
+
+\subsection{Papers read by Yu Su}
+The first paper was the tutorial paper on Belief Propagation by Yedidia
+\cite{Yedidia:2003:UBP}
+\begin{itemize*}
+\item {\em Main idea}:
+A lot of inference models such as Bayesian Networks, Pair-wise Markov Random Field Graph, Potts models and Factor Graphs were introduced in this paper.
+The author also showed how to convert different models into the Pair-wise Markov Random Field Graph.
+Then the Standard Belief Propagation algorithm was developed on Pair-wise MRF graph and it's intuitively exact on loop-free graphs.
+The author applied Bethe Approximation in free energy theory to prove that BP is exact on loop-free graphs.
+The observation from the Kikuchi Approximation in free energy theory led to the Generalized Belief Propagation algorithm, which is constructed on clusters of the original graph.
+
+\item {\em Use for our project}:
+This paper is a good start for those who do not know Belief Propagation before. It also introduced many models and showed how to convert them, which is helpful when we are constructing models on real data sets.
+
+\item {\em Shortcomings}:
+The regional graph method introduced to solve the accuracy problem suffers exponential computing complexity.
+
+\end{itemize*}
+
+
+The second paper was a deeper discussion on BP by Yedidia
+\cite{Yedidia05constructingfree}
+\begin{itemize*}
+\item {\em Main idea}:
+
+This paper introduced Factor Graph and re-expressed Belie Propagation in this model.
+Then the author proved that BP is exact on loop-free graph by showing the equivalence of BP and Bethe Approximation in free energy theory.
+A more important contribution of this paper is that it pointed out what condition must be kept to get a valid approximation on general graphs.
+Several methods are introduced to get better accuracy and more chance to converge on loopy graphs, such as region graph method, junction graph method, etc.
+
+\item {\em Use for our project}:
+This paper would be very useful if we want to do some extra work such as prove the accuracy of our new method.
+
+\item {\em Shortcomings}:
+There is still no systematic method to choose regions, which influence much on accuracy and complexity. People still have to tune the algorithm for different problems to get better answers.
+
+\end{itemize*}
+
+
+The third paper was sum-product algorithm by Kschischang
+\cite{Kschischang98factorgraphs}
+\begin{itemize*}
+\item {\em Main idea}:
+This paper introduced sum-product algorithm on factor graph to compute marginal functions.
+The prevalence of the application of factor graph and sum-product algorithm is demonstrated by generalizing forward-backward algorithm, Viterbi algorithm and Kalman Filtering into sum-product algorithm.
+This paper summarized many methods in applying sum-product algorithm on loopy graphs. Some of them utilized the intrinsic properties of the problem and get good result, such as by carefully scheduling message passing. Some methods translated loopy graphs into loop-free graphs, such as clustering or stretching nodes.
+
+\item {\em Use for our project}:
+Many background and examples are introduced in this paper. And since sum-product algorithm is similar to BP, this paper helps understand BP.
+
+\item {\em Shortcomings}:
+The graph translation methods might be too complex to compute that the accuracy improvements might be not reachable.
+\end{itemize*}
+
+\subsection{Papers read by Yuchen Tian}
+The first paper was the Pioneer Error Correcting Code paper by Thomas\cite{Thomas1995}
+\begin{itemize*}
+\item {\em Main idea}: The main contribution in Thomas's paper is brought up the idea of using Error Correcting Code(ECOC) in multiclass classification. The basic idea behind this is to convert a multiclass problem into several binary classification problem by designing a N bit code for each class, then run a classifier N times to compute how likely for a given example the probability on the $N_{th}$ bit is 1. The author then introduced a simple loss-based decoding to make decisions. In experiment, the author compared ECOC approach with One-Vs-All scheme and multiclass decision tree approach, with decision tree and neural network chosen as the underlying binary classifiers. The experiment showed that ECOC approach has better accuracy than the other two.
+\item {\em Use for our project}:
+It offers us a general way to solving a multiclass learning problem when we only have binary classifier(like BP in this case). It is also useful to help us get some idea how to extend the Fast BP into multiclass presentation. \textbf{More details about how this is related to BP can be found in the Methods section.}
+\item {\em Shortcomings}:
+Bad coding design may lead to excessive number of classifiers, thus make the computation very expensive.
+\end{itemize*}
+
+The second paper was by Erin. It offers a general framework to reduce multiclass problem to binary classification problem.\cite{Erin2000}
+\begin{itemize*}
+\item {\em Main idea}: The main contribution in this paper is that the author presented a unifying approach of reducing multiclass classification problem to binary classification problems. By extending ECOC approach from binary to triple values and using loss-based decoding instead of hamming distance decoding, they demonstrated that One-Vs-All and All-Vs-All scheme are just special cases of ECOC approaches. This provides us a better way to understand ECOC, that it is a generalized way to solve multiclass labeling using binary classifiers.
+\item {\em Use for our project}: Unify some general and intuitive model under framework of Error Correcting Code, may simplify our assumption and design of algorithm.
+\item {\em Shortcomings}:
+Suffers the same problem with Thomas's paper, and loss-based decoding scheme may be expensive in Hadoop environment.
+\end{itemize*}
+
+The third paper was by Ryan concerning mainly the efficiencies of various algorithms in comparing to general OVA scheme.\cite{Ryan2000}
+\begin{itemize*}
+\item {\em Main idea}: In this paper, author argues that One-Vs-All scheme is just as accurate as other approaches and criticizes that the existing literature suffers from two major weakness: improper controlled or not well reported. If the right and well-tune classifier is chosen, then the difference between those approaches and One-Vs-All is very small.
+In order to hold a fair game, they chose the well tuned binary classifier such as SVM and using some statistical methods to measure whether the difference between the performance of OVA and ECOC approaches are statistically significant.
+
+Their conclusion comes that in performance OVA scheme has nearly identical performance as other approaches.
+\item {\em Use for our project}: A very thorough survey on comparing the efficiencies of various approaches. Very useful in helping choosing appropriate algorithm that is well-balanced on both efficiency and accuracy.
+\item {\em Shortcomings}:
+OVA scheme converges much slower than AVA in some datasets, while AVA scheme leads to many more classifiers to train.
+\end{itemize*}
+
+\subsection{Papers read by Huanchen Zhang}
+The first idea is brought up by Malewicz, introducing Pregel\cite{Malewicz2010:PSL:1807167.1807184}.
+\begin{itemize*}
+\item {\em Main idea}: Pregel is in essence a message passing model developed by Google and inspired by Valiant’s Bulk Synchronous Parallel model, where vertices send messages to each other in a series of iterations called supersteps. The input to the Pregel framework is a directed graph. Within the graph, each vertex is associated with a modifiable, user defined value. The directed edges are associated with their source vertices, and each edge consists of a modifiable, user defined value and a target vertex identifier. The computations consist of a sequence of iteration called supersteps. In each superstep, the framework invokes a user defined function for each vertex. The function can read messages sent to V in superstep S-1, and send messages to other vertices that will be received at superstep S+1 and modify the state value of V and its out going edges. Edges do not have associated computation. Vertices can deactivate themselves by voting to halt, which mean the vertex has no further work to do unless triggered externally, by a message from other vertex. The whole algorithm terminates when all vertices are inactive and there is no message in transit.
+
+Out of Google, there is a similar open source project Apache Giraph.
+\item {\em Use for our project}: Pregel is a BSP framework on top of Hadoop for large-scale graph mining. Belief propagation is also a message passing algorithm on graph, so Pregel can be used to implement BP.
+\item {\em Shortcomings}:Bulk synchronous computation can be inefficient, because it needs to keep old and new messages, which means 2x overhead, and send redundant messages to vertices in the same node.
+\end{itemize*}
+
+The second paper is written by U Kang's about PEGASUS\cite{Kang:2009:PPG:1674659.1677058}.
+\begin{itemize*}
+\item {\em Main idea}: PEGASUS is an open source Peta Graph Mining library implemented on top of Hadoop. Unlike the message passing model of Pregel, it views graph mining problems as a repeated matrix-vector multiplication and expresses a graph mining problem as a chained MapReduce. It provides a primitive called GIM-V (generalized iterated matric-vector multiplication), which is a generalization of normal matrix-vector multiplication. The usual matrix-vector multiplication is $M \times v = v^{\prime}$ where $ v^{\prime}_{i} = \sum_{j=1}^{n} m_{i,j}v_{j}$.
+
+More specifically, GIM-V separates the usual matrix-vector multiplication with three functions combine2, combineAll, assign, which are implemented in MapReduce to achieve good parallelism. 
+
+\begin{itemize*}
+\item combine2: multiply $m_{i,j}$ and $v_{j}$.
+\item combineAll: sum n multiplication results for node i.
+\item assign: overwrite previous value of $v_{i}$ with new result to make $v^{\prime}_{i}$.
+\end{itemize*}
+
+\item {\em Use for our project}: 
+As discussed in the paper, by customizing these three operations, we can obtain different, useful algorithms including PageRank, Random Walk with Restart, connected components, and diameter estimation. Belief propagation algorithm can also be implemented using GIM-V as discussed in next paper.
+\item {\em Shortcomings}:
+With PEGASUS, graph mining algorithms are written as a series of MapReduce jobs, which requires passing the entire state of the graph from one state to the next. This can cost much communication and serialization overhead.
+\end{itemize*}
+
+The third paper is U Kang's Paper about the implementation of BP on Hadoop\cite{UKang2010KDD}.
+\begin{itemize*}
+\item {\em Main idea}:
+In this paper, belief propagation is also formulated as a variant of GIM-V. First, the original undirected graph G is converted to a directed line graph $L(G)$. The directed line graph is a graph such that each node in $L(G)$ represents an edge in $G$, and there is an edge from $v_{i}$ to $v_{j}$ of $L(G)$ if the corresponding edges $e_{i}$ and $e_{j}$ form a length-two directed path from $e_{i}$ to $e_{j}$ in $G$. Then the belief propagation is formulated in GIM-V as
+
+\begin{equation}
+	m(s)^{next} = A^{\prime} \times_{G} m^{cur}
+\end{equation}
+
+where $A^{\prime}$ is the adjacency matrix of $L(G)$.
+
+Experiment shows when analyzing large scale graph which cannot fit in memory, belief propagation on Hadoop is the only solution. For medium-to-large graph whose nodes fit in memory but edges do not fit in memory, belief propagation on hadoop can also run faster than single machine BP. So, this method can be very useful if the graph is very large. 
+\item {\em Use for our project}:
+This Hadoop-BP implementation can be used to analyze some interesting problems on our data sets. 
+\item {\em Shortcomings}:
+Same potential problem as previous one. In the MapReduce computation framework, only the file systems (HDFS) can be used for communication and serialization. So, this chained MapReduce jobs can cost much communication and serialization overhead, because it needs multiple iterations and each iteration needs disk writes and reads.
+\end{itemize*}
+
+
+
+\subsection{Papers read by Guanyu Wang}
+The first paper was Fast approximation algorithm for BP by by Koutra, et al.
+\cite{KoutraKKCPF11}
+\begin{itemize*}
+\item {\em Main idea}:
+They use a linear system to approximate the final solution to the Belief Propagation. There are mainly two key ideas for the correctness of the approximation: (1) Using the \emph{odds ratio} instead of the original probabilities in all computations. (2) Using the Maclaurin expansion to linearize the consecutive product and taking the first-order approximation. Under the assumption that all probabilities are not far from a half, the approximation accuracy is quite good.
+
+~~~~Mainly, the \textbf{FaBP} solves the linear system
+\begin{equation}
+\label{FaBPLS}
+\mathbf{b_h}=[\mathbf{I}+\alpha \mathbf{D} - c^{\prime}\mathbf{A}]^{-1}\mathbf{\phi_h}
+\end{equation}
+to approximate the Belief Propagation with $n$ nodes, where $\mathbf{b_h}$ (what we want to achieve) is the "about-half" approximated odds ratio of final probabilities for two classes, $\mathbf{I}$ is the $n \times n$ identity matrix, $\mathbf{D}$ is the $n \times n$ diagonal matrix of degrees, $\mathbf{A}$ is the $n \times n$ symmetric adjacency matrix, and $\mathbf{\phi_h}$ is the "about-half" approximated odds ratio of prior probabilities.
+
+~~~~The most important approximation technique used in the approximation is that the original sum-product message updating rule and belief updating rule can be written as continued product with just odd-ratio variables.
+\begin{equation}
+\label{eq:odd-ratio update1}
+m_r(i,j)\leftarrow B[h_r, b_r(i)/m_r(j,i)]
+\end{equation}
+\begin{equation}
+\label{eq:odd-ratio update2}
+b_r(i)\leftarrow \phi_r(i)\Pi_{j\in N(i)}m_r(j,i)
+\end{equation}
+where the $<v>$ are odd-ratio for different variables, i.e. $b, m, h, \phi$. $B(a,b)$ is the blending function $B(a,b) = \frac{ab+1}{a+b}$. Then using the "about-half" odds ratio  to replace the common one:
+\begin{equation}
+\label{eq:odd-ratio approximate}
+v_r=\frac{v}{1-v}= \frac{1/2+v_h}{1/2-v_h}\approx 1+4v_h
+\end{equation}
+Also, since all the updating equations are continued product, then using the Taylor expansion for logarithm after taking the logarithm on both side of Eq.~(\ref{eq:odd-ratio update1}) and Eq.~(\ref{eq:odd-ratio update2}). This finally provides us the linear update rules, which leads to the final linear system~(\ref{FaBPLS}).
+
+\item {\em Why useful}:
+\textbf{FaBP} provides a brand-new idea that ``compress'' the information for any node into one variable, and using the first order approximation to simplify the computation while keeping accuracy. To know more about this point clear, refer \cite{KoutraKKCPF11} for details. The approximation technique and analysis for deriving this equation can become the fundament of our project.
+
+\item {\em Shortcomings}:
+There is an inherent property inside the \textbf{FaBP} ruins its direct extension to multi-classes problems: all the computations depends on the \emph{odds ratio}. Obviously, $\mathbf{b_h}$ and $\mathbf{\phi_h}$ can maintain their definitions when there are only two types of probabilities. Another difficulty for the extension arises from the $\alpha$ and $c$ in Eq.(\ref{FaBPLS}). They all depend on a homophily factor, which depicts the similarity between two connected nodes. If there are more than two classes, how to describe the homophily (or heterophily) is not clear.
+\end{itemize*}
+
+
+
+The second paper was Decision Directed Acyclic Graph (\textbf{DDAG}) algorithm by by Platt et al.
+\cite{Platt00largemargin}
+\begin{itemize*}
+\item {\em Main idea}:
+Based on the idea to convert the two-class classifiers into a multi-class classifier, they provides a framework called Decision Directed Acyclic Graph (\textbf{DDAG}), whose nodes contains just binary classifier, to do multiple classification. By combing many two-class classifiers with a directed acyclic structure, these classifiers can work with order as multiple-classifier.
+
+~~~~More precisely, the main result in this paper is the algorithm called Directed Acyclic Graph SVM (DAGSVM), which combines the results of many 1-v-1 SVMs. So constructing a Rooted Binary DAG first, in which all the nodes evaluate a binary function, which is actually one SVM. The node is then exited via the left edge, if the binary function is zero; or the right edge, if the output SVM result is one. This process is repeated on all the following children. Any time one SVM is activated, the algorithm can get a negative conclusion about one class, i.e. this input is not in this class. It is easy to see that the algorithm can reject more classes along it moves into deep layer of the constructed DAG and finally achieve the real class. According to their analysis and experiment. The DAGSVM algorithm is superior to other multiclass SVM algorithms in both training and evaluation time.
+
+~~~~This work brings great connections among one-versus-one classification, one-versus-rest classification and the multiple classification problems.
+
+\item{\em Why useful}
+ \textbf{FaBP} can be viewed as a good two-classifier, this paper provides a clever way to use \textbf{FaBP} as elementary unit to construct more powerful classifiers: in the multiple classes case (assume there are $n$ different classes), for any node, we can always choose any two classes and test which one this node prefer. After comparing all $n \choose 2$ pairs of classes, we will have a complete partial order.
+
+\item{\em Shortcoming}
+There are mainly two weak points: (1) The \textbf{DDAG} algorithm needs a acyclic graph, however if we want to use similar ideas on Belief Propagation, there is a chance that we finally get a circle, then the original idea fails. (2) The number of binary classifiers needed to construct the multiple classes one is $N(N-1)/2$ for $N$ classes. This quadratically increasing number may hurt the real implementation (e.g. on Hadoop).
+\end{itemize*}
+
+
+The third paper was walk-sum interpretation of Gaussian \textbf{BP} by Malioutov et al.
+\cite{Malioutov2006}
+\begin{itemize*}
+\item {\em Main idea}:
+By decomposing the correlation between each pair of variables as a sum over all walks between those variables in the graph, they provide a walk-sum interpretation for the Gaussian Belief Propagation as well as loopy Belief Propagation.
+
+~~~~This work develops a ``walk-sum'' formulation for computation of means, variances and correlations as sums over certain sets of weighted walks in a graph. It first provides a description of the walk summability: a walk of $l>0$ in a graph $G$ is a sequence of nodes $\{w_0, w_1, \cdots, w_l\}$, $w_i\in V$ and any two consecutive nodes $(w_k, w_{k+1})$ represents an edge in this graph, i.e. $(w_k, w_{k+1})\in E$. Define the weight of a walk to be the product of edge weights along the walk. There is a connection between the Gaussian inference and the walk. The covariance can be decomposed as a sum of infinite number of new matrices, and their new matrices' elements can be computed as a sum of walks' weight. If the sum over all walks define on a Gaussian distribution is well defined (converge to the same value for all possible summation order, etc.), then this distribution is walk-summable. The important part is that in walk-summable models, means and variances correspond to walk-sums over certain sets of walks, and the exact walk-sums over infinite sets of walks for means and variances can be computed efficiently in a recursive fashion. Finally they show that these walk-sum computations map exactly to belief propagation updates.
+\item {\em Why useful}
+It provides a new direction: using other expressions/understanding for Belief Propagation. We already know that \textbf{BP} can be presented as an energy minimizing problem (refer \cite{And04efficientbelief}). The energy function can be written as a format like $\min f(x)=g(x)+h(x)$
+with differentiable part $g(x)$ and non-differentiable part $h(x)$. Usually the generalized descent gradient method can be used to solve it. At the same time, this function can hopefully be approximated by the second-order methods. Also, the walk-sum interpretation may also be written as an optimization problem with adjacency matrix and degree matrix, etc.
+\item{\em Shortcomings}
+This paper just discusses the Gaussian and Loopy Belief Propagation. Will similar analysis work for general \textbf{BP} is still obscure.
+
+\end{itemize*}

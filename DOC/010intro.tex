@@ -1,0 +1,36 @@
+% {\em
+% \bit
+% \item
+% what is the problem
+% \item
+% what are the applications
+% \eit
+% }
+
+%The basic idea of inference problem is to get something interesting based on 
+%the observation and some probability constrains.
+%For example, given the constrains on the original code and the noisy channel's property, how can we get the original code from the received corrupted code.
+
+\subsection{Belief Propagation}
+Based on the pairwise MRF graph, there is a message passing algorithm, called Belief Propagation\cite{Yedidia:2003:UBP} to compute the marginal possibility of unknown nodes.
+
+The messages are defined as $m_{ij}(x_j)$, which is the chance that node j is in state $x_j$ in node i's opinion.
+
+Given node i is in state $x_i$, we can simply get $m_{ij}(x_j) \equiv \psi(x_i, x_j)$, where $\psi(x_i, x_j)$
+is the constrain between unknown node i and unknown node j.
+
+Then, expand $x_{i}$ with the information of what other unknown nodes think node i:
+$$m_{ij}(x_j) \equiv \sum_{x_i} {\psi(x_i, x_j) \prod_{k \in N(x_i) \backslash j}{m_{ki}(x_i)}}$$
+
+Gather the internal constrains between the observation and unknown node i:
+$$m_{ij}(x_j) \equiv \sum_{x_i} {\phi(x_i) \psi(x_i, x_j) \prod_{k \in N(i) \backslash j}{m_{ki}(x_i)}}$$
+
+This describes how we update the messages. Then the final probability of node i is in state $x_i$ would be(k is used for normalization):
+$$b_i(x_i) \equiv k\phi(x_i)\prod_{j \in N(i)} m_{ji}(x_i)$$
+
+\subsection{Fast Algorithm for Belief Background}
+Fast algorithm of BP approximates the BP algorithm with a matrix inversion problem\cite{KoutraKKCPF11}. It uses a linear system to approach the final solution to the Belief Propagation, call it Fast BP.
+Under the assumption that all probabilities are around 0.5, the approximation accuracy is quite good.
+The main equation for Fast BP is the following one:
+$$W\mathbf{b_h}=\mathbf{\phi_h}$$
+where $W$ can be viewed as a function of the adjacency matrix of the graph, degree matrix as well as the homophily factor Then the Belief Propagation problem actually has been converted into a matrix inversion problem, computing $W^{-1}{\phi_h}$. One main limitation now for Fast BP is that it support only two classes.

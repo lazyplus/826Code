@@ -1,0 +1,88 @@
+\begin{thebibliography}{10}
+
+\bibitem{Thomas1995}
+Thomas~G. Dietterich.et.al.
+\newblock Solving multiclass learning problem via error-correcting output
+  codes.
+\newblock {\em Journal of Artifical Intelligence Research}, 1995.
+
+\bibitem{And04efficientbelief}
+Pedro Felzenszwalb, , Pedro~F. Felzenszwalb, and Daniel~P. Huttenlocher.
+\newblock Efficient belief propagation for early vision.
+\newblock In {\em In CVPR}, pages 261--268, 2004.
+
+\bibitem{Kang:2009:PPG:1674659.1677058}
+U.~Kang, Charalampos~E. Tsourakakis, and Christos Faloutsos.
+\newblock Pegasus: A peta-scale graph mining system implementation and
+  observations.
+\newblock In {\em Proceedings of the 2009 Ninth IEEE International Conference
+  on Data Mining}, ICDM '09, pages 229--238, Washington, DC, USA, 2009. IEEE
+  Computer Society.
+
+\bibitem{UKang2010KDD}
+U~Kang.et.al.
+\newblock Inference of beliefs on billion-scale graphs.
+\newblock {\em Large-scale Data Mining: Theory and Applications 2010, in
+  conjunction with KDD 2010}, 2010.
+
+\bibitem{KoutraKKCPF11}
+Danai Koutra, Tai-You Ke, U.~Kang, Duen~Horng Chau, Hsing-Kuo~Kenneth Pao, and
+  Christos Faloutsos.
+\newblock Unifying guilt-by-association approaches: Theorems and fast
+  algorithms.
+\newblock In {\em ECML/PKDD (2)}, pages 245--260, 2011.
+
+\bibitem{Kschischang98factorgraphs}
+Frank~R. Kschischang, Brendan~J. Frey, and Hans-Andrea Loeliger.
+\newblock Factor graphs and the sum-product algorithm.
+\newblock {\em IEEE TRANSACTIONS ON INFORMATION THEORY}, 47:498--519, 1998.
+
+\bibitem{Erin2000}
+Erin L.Allwein.et.al.
+\newblock Reducing multiclass to binary : A unifying approach for margin
+  classiﬁers.
+\newblock {\em Journal of Machine Learning Research}, 2000.
+
+\bibitem{Malewicz2010:PSL:1807167.1807184}
+Grzegorz Malewicz, Matthew~H. Austern, Aart~J.C Bik, James~C. Dehnert, Ilan
+  Horn, Naty Leiser, and Grzegorz Czajkowski.
+\newblock Pregel: a system for large-scale graph processing.
+\newblock In {\em Proceedings of the 2010 ACM SIGMOD International Conference
+  on Management of data}, SIGMOD '10, pages 135--146, New York, NY, USA, 2010.
+  ACM.
+
+\bibitem{Malioutov2006}
+Dmitry~M. Malioutov, Jason~K. Johnson, and Alan~S. Willsky.
+\newblock Walk-sums and belief propagation in gaussian graphical models.
+\newblock {\em J. Mach. Learn. Res.}, 7:2031--2064, December 2006.
+
+\bibitem{Platt00largemargin}
+John~C. Platt, Nello Cristianini, and John Shawe-taylor.
+\newblock Large margin dags for multiclass classification.
+\newblock In {\em Advances in Neural Information Processing Systems 12}, pages
+  547--553, 2000.
+
+\bibitem{Platt2000}
+J.C. Platt.et.al.
+\newblock Large margin dags for multiclass classication.
+\newblock {\em Advances in Neural Information Processing Systems}, 2000.
+
+\bibitem{Ryan2000}
+Ryan Rifkin.et.al.
+\newblock In defense of one-vs-all classification.
+\newblock {\em Journal of Machine Learning Research}, 2004.
+
+\bibitem{Yedidia:2003:UBP}
+Jonathan~S. Yedidia, William~T. Freeman, and Yair Weiss.
+\newblock Exploring artificial intelligence in the new millennium.
+\newblock chapter Understanding belief propagation and its generalizations,
+  pages 239--269. Morgan Kaufmann Publishers Inc., San Francisco, CA, USA,
+  2003.
+
+\bibitem{Yedidia05constructingfree}
+Jonathan~S. Yedidia, William~T. Freeman, and Yair Weiss.
+\newblock Constructing free energy approximations and generalized belief
+  propagation algorithms.
+\newblock {\em IEEE Transactions on Information Theory}, 51:2282--2312, 2005.
+
+\end{thebibliography}
