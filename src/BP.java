@@ -760,17 +760,9 @@ public class BP extends Configured implements Tool {
 			return printUsage();
 		}
 
-		/*
-		 * String[] newargs = (String[])Array.newInstance(String.class,
-		 * args.length - 1); for(int i=0; i<args.length-1; ++i){ newargs[i] =
-		 * args[i+1]; } args = newargs;
-		 */
 		edge_path = new Path(args[0]);
 		prior_path = new Path(args[1]);
 		output_path = new Path(args[2]);
-		Path prev_local_path = new Path("run_tmp/prev_local/");
-		Path new_local_path = new Path("run_tmp/new_local/");
-		Path tmp_output_path = new Path(output_path.toString());
 
 		number_msg = Long.parseLong(args[3]);
 		nreducer = Integer.parseInt(args[4]);
@@ -804,9 +796,8 @@ public class BP extends Configured implements Tool {
 
 		int i;
 		for (i = cur_iter; i <= max_iter; i++) {
-//			System.out.println("   *** ITERATION " + (i) + "/" + max_iter
-//					+ " ***");
-
+			System.out.println("   *** ITERATION " + (i) + "/" + max_iter
+					+ " ***");
 			JobClient.runJob(configUpdateMessage());
 			JobClient.runJob(configCheckErr());
 			JobClient.runJob(configSumErr());
